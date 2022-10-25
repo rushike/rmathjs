@@ -4,8 +4,11 @@
     "dev": "nodemon ./src/index.ts"
   },
   "devDependencies": {
+    "@types/jest": "^29.2.0",
     "@types/node": "^18.11.3",
+    "jest": "^29.2.2",
     "nodemon": "^2.0.20",
+    "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0"
   },

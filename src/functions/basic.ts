@@ -1,3 +1,4 @@
+
 /**
  * 
  * @param n 
@@ -66,7 +67,6 @@ export function gcd(a : number | bigint, b : number | bigint) {
 
   while(b_) {
     r_ = a_ % b_;
-    console.log(a_, b_, r_)
     a_ = b_;
     b_ = r_;
   } return a_;
@@ -102,6 +102,10 @@ export function is_prime_slow(n : number | bigint) {
 
 export function primes(n : number | bigint) {
   return sieve_of_eratosthenes(n)
+}
+
+export function pi(n : number | bigint) {
+  return sieve_of_eratosthenes(n).length;
 }
 
 export function sieve_of_eratosthenes(n : number | bigint) {

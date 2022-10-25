@@ -1,38 +1,28 @@
 import { MILLER_RABIN_K_BASES } from "../constants";
 import { gcd, pow } from "./basic";
-import { factor_out } from "./factorize";
+import { factor_out } from "./factors";
 
+/**
+ * 
+ * @param n 
+ * @returns if n is probably prime
+ */
 export function is_prime(n : number | bigint) {
-
+  return miller_rabin_primality(n);
 }
 
 export function is_relatively_prime(n : number | bigint , l : number | bigint | Array<number> | Array<bigint>) {
-  if (typeof l === 'number' || typeof l === 'bigint') gcd(n, l);
+  if (typeof l === 'number' || typeof l === 'bigint') return gcd(n, l) == 1n;
 }
 
 
 
-/**
- * Input #1: n > 3, an odd integer to be tested for primality
-    Input #2: k, the number of rounds of testing to perform
-    Output: “composite” if n is found to be composite, “probably prime” otherwise
-
-    write n as 2s·d + 1 with d odd (by factoring out powers of 2 from n − 1)
-    WitnessLoop: repeat k times:
-        pick a random integer a in the range [2, n − 2]
-        x ← a^d mod n
-        if x = 1 or x = n − 1 then
-            continue WitnessLoop
-        repeat s − 1 times:
-            x ← x2 mod n
-            if x = n − 1 then
-                continue WitnessLoop
-        return “composite”
-    return “probably prime”
- * 
- * 
- * @param n 
- * @param k 
+/** 
+ * test if number is prime for n < 3,317,044,064,679,887,385,961,981
+ * for all other greater n, it check if number is composite.
+ * there is probability of 1 / (2 ^ 14) that output might wrong for greater n
+ * @par666am n number to check primality
+ * @param k no of bases | or bases array
  */
 
 export function miller_rabin_primality(n : number | bigint, k : number | number[]= MILLER_RABIN_K_BASES) {
@@ -43,6 +33,7 @@ export function miller_rabin_primality(n : number | bigint, k : number | number[
   var {f : {p : p_, k : s_}, d : d_} = factor_out(n_, 2);
   
   k_.forEach(a_=> {
+    if (a_ >= n) return
     var x_ = BigInt(pow(a_, d_ - 1n, n_));
     if (x_ === 1n || x_ === n_ - 1n) return;
     var s1_ = BigInt(s_) - 1n;
