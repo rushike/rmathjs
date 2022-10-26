@@ -47,9 +47,9 @@ export function factor_out(n : number | bigint , f : number | bigint) : FactorOu
 export function factorize(n : number | bigint) : Factor[] {
   var n_ = BigInt(n),
   i_ = 2n,
-  factors : Factor[] = []
+  factors : Factor[] = [{k : 1, p : 1}]
   ;
-  if (is_prime(n_)) return [{p:n_, k:1}];
+  if (is_prime(n_)) return [{k : 1, p : 1}, {p:n_, k:1}];
   while (i_ * i_ <= n_) {
     if (n_% i_) {
       i_++;

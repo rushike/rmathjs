@@ -2,13 +2,30 @@ import { pow } from "./basic";
 import { factorize, factorize$k, prime_factor_count, prime_factor_count$1 } from "./factors";
 import { miller_rabin_primality } from "./primes";
 
+export function u(n : number | bigint) {
+  return 1;
+}
+
+export function I$(n : number | bigint) {
+  var n_ = BigInt(n);
+  if( n_ == 1n ) return 1;
+  return 0;
+}
+
+export function I(n : number | bigint) {
+  return BigInt(n);
+}
+
 export function phi(n : number | bigint) {
-  if (miller_rabin_primality(n)) return BigInt(n) - 1n;
   var n_ = BigInt(n),
   factors = factorize(n);
   
+  if (n_ == 1n) return 1n;
+  else if (miller_rabin_primality(n_)) return n_ - 1n;
+
   return factors.reduce((acc : bigint, factor) => {
     var p_ = BigInt(factor.p);
+    if ( p_ == 1n ) return 1n;
     n_ = n_ / p_;
     
     return acc * ( p_ - 1n )

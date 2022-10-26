@@ -3,8 +3,9 @@ import { mangoldt, mu, phi } from "../../src/functions/arithmetic"
 
 describe("test arithmetic functions : ", ()=>{
   it("test euler totient function φ(n) -> ", ()=>{
-    var expected = [0n, 1n, 66n, 2908n, 9672n, 29528064n, 2056632768n, 873767328n]
-    var res = [1, 2, 67, 2909, 29034, 120910920, 3913091091, 1029012901].map(phi);
+    var expected = [1n, 1n, 20n, 66n, 2908n, 9672n, 29528064n, 2056632768n, 873767328n]
+    var res = [1, 2, 25, 67, 2909, 29034, 120910920, 3913091091, 1029012901].map(phi);
+
     expect(res).toEqual(expected);
     
   })
