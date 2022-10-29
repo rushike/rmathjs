@@ -1,4 +1,4 @@
-import { is_relatively_prime, miller_rabin_primality } from "../../src/functions/primes"
+import { is_prime_slow, is_relatively_prime, miller_rabin_primality, pi, sieve_of_eratosthenes } from "../../src/functions/primes"
 
 describe("test the prime number functions : ", ()=>{
   it("test is_relatively_prime(12252121211212212222n, 12345212121212122222n) = false -> ", ()=>{
@@ -16,4 +16,19 @@ describe("test the prime number functions : ", ()=>{
     expect(res).toBe(true);
   })
 
+
+  it("test is_prime_slow", ()=>{
+    var res = is_prime_slow(1000000007);
+    expect(res).toBe(true);
+  })
+
+  it("test sieve_of_eratosthenes < 100000000 -> ", ()=>{
+    var res = sieve_of_eratosthenes(100000000).length;
+    expect(res).toBe(5761455);
+  })
+
+  it("test π(n) = π(100000000) -> ", ()=>{
+    var res = pi(100000000);
+    expect(res).toBe(5761455);
+  })
 })

@@ -11,17 +11,20 @@ export function is_prime(n : number | bigint) {
   return miller_rabin_primality(n);
 }
 
-export function is_relatively_prime(n : number | bigint , l : number | bigint | Array<number> | Array<bigint>) {
-  if (typeof l === 'number' || typeof l === 'bigint') return gcd(n, l) == 1n;
+export function is_prime_slow(n : number | bigint) {
+  var n_ = Number(n),
+  i_ = 2,
+  root_n = Math.sqrt(n_);
+  while(i_ < root_n && n_ % i_ != 0) i_++;
+  return n_ % i_ != 0;
 }
-
 
 
 /** 
  * test if number is prime for n < 3,317,044,064,679,887,385,961,981
  * for all other greater n, it check if number is composite.
  * there is probability of 1 / (2 ^ 14) that output might wrong for greater n
- * @par666am n number to check primality
+ * @param n number to check primality
  * @param k no of bases | or bases array
  */
 
@@ -50,4 +53,35 @@ export function miller_rabin_primality(n : number | bigint, k : number | number[
 
 export function solovay_strassen_primality(n : number | bigint) {
   var n_ = Number(n);
+}
+
+export function is_relatively_prime(n : number | bigint , l : number | bigint | Array<number> | Array<bigint>) {
+  if (typeof l === 'number' || typeof l === 'bigint') return gcd(n, l) == 1n;
+}
+
+export function primes(n : number | bigint) {
+  return sieve_of_eratosthenes(n)
+}
+
+export function sieve_of_eratosthenes(n : number | bigint) {
+  var n_ = Number(n),
+  i_ = 3,
+  j_,
+  is_prime = new Int8Array(n_  + 1), // to accomadate last number
+  primes = [2];
+  while(i_ <= n) {
+    primes.push(i_);
+    j_ = i_ * i_;
+    while(j_ <= n) {
+      is_prime[j_] = 1;
+      j_ += 2 * i_;
+    }
+    i_ += 2; // skipping all even
+    while (i_ <= n_ && is_prime[i_]) i_ += 2;
+  }
+  return primes;
+}
+
+export function pi(n : number | bigint) {
+  return sieve_of_eratosthenes(n).length;
 }

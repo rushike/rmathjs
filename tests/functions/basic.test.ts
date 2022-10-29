@@ -1,4 +1,4 @@
-import { factorial, gcd, is_prime_slow, pi, pow, sieve_of_eratosthenes } from "../../src/functions/basic";
+import { factorial, gcd, pow } from "../../src/functions/basic";
 
 describe("test basic math operations : ", ()=>{
   it("test gcd(12252121211212212222n, 12345212121212122222n) -> ", ()=>{
@@ -20,19 +20,4 @@ describe("test basic math operations : ", ()=>{
     var res = pow(2, 45, 67);
     expect(res).toBe(58n);
   });
-
-  it("test is_prime_slow", ()=>{
-    var res = is_prime_slow(1000000007);
-    expect(res).toBe(true);
-  })
-
-  it("test sieve_of_eratosthenes < 100000000 -> ", ()=>{
-    var res = sieve_of_eratosthenes(100000000).length;
-    expect(res).toBe(5761455);
-  })
-
-  it("test π(n) = π(100000000) -> ", ()=>{
-    var res = pi(100000000);
-    expect(res).toBe(5761455);
-  })
 })
