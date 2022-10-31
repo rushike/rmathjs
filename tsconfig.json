@@ -3,12 +3,12 @@
     "target": "ES2020",                               
     "module": "ES2020",                           
     "outDir": "./dist",                             
-    "rootDir": "./src",                             
+    "rootDir": ".",                             
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true
   },
-  "include": ["src/**/*.js", "src/**/*.ts", "src/**/*.d.ts"],
+  "include": ["src/**/*.js", "src/**/*.ts", "src/**/*.d.ts", "performance.js"],
   "exclude":[
     "./node_modules"
   ]

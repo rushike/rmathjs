@@ -47,11 +47,32 @@ describe("test complex (C) dtype : ", ()=>{
     expect(res).toEqual(expected);
   })
 
+  it("test square function -> ", ()=>{
+    var a = complex("1+i"),
+      expected = complex("2i");
+    ;
+    var res = a.square();
+
+    expect(res).toEqual(expected)
+    
+  })
+
+  it("test powz function -> ", ()=>{
+    var a = complex("1+i"),
+    expected = [complex(1), a, complex("2i"), complex(-4), complex("8-8i"), complex(16)]
+    ;
+    var  res = [0, 1, 2, 4, 7, 8].map(n=>a.powz(n))
+
+    expect(res).toEqual(expected);
+    
+  })
+
   it("test conjugate function -> ", ()=>{
     var a = complex("5656.5+89.89i"),
       expected = complex("5656.5 - 89.89i")
     ;
     var res = a.conjugate();
+    
     expect(res).toEqual(expected)
     
   })

@@ -4,22 +4,47 @@ import { decimal, R, Ri, BigDecimal } from "./R"
 
 export type Ci = Complex | Ri;
 
-export interface C extends N {
+export type C = Complex | R;
+
+export interface Cx {
   a : BigDecimal, // real part
   b : BigDecimal // complex part
 }
 
-class Complex implements C {
-  // private static COMPLEX_STRING_MATCH_EXP = /(?<real>\-?\d+)\s*([+]?\s*(?<imaginary>\d*)i)?/
-  private static COMPLEX_STRING_MATCH_EXP = /(?<real>(?<integer_r>\-?\s*[\d]+)(\.(?<fraction_r>[\d]+))?)\s*([+]?\s*(?<imaginary>((?<integer_i>\-?\s*[\d]+)(\.(?<fraction_i>[\d]+))?)\s*)i)?/
+export class Complex extends N implements Cx {
+  /** below matches number of form 
+  * 1. 6.4i+5.1    --> whole number in imaginary and real
+  * 2. 6.4i        --> whole number in imaginary 2
+  * 3. 6.4         --> whole number in real 2
+  * 4. 6.4+5.1i    --> real part in real 2
+  * 5. 6.4 5.1i    --> first number store in real 2 
+  * 6. 5.1 i + 8.7 --> whole number in imaginary and real
+  */ 
+  private static COMPLEX_REAL_STRING_MATCH_EXP = /(?<imaginary>[\-\+]?\s*\d+(\.\d+)?i)\s*(?<real>[\-\+]?\s*\d+(\.\d+\s*)?)|(?<imaginary2>[\-\+]?\s*\d+(\.\d+)?i)|(?<real2>[\-\+]?\s*\d+(\.\d+\s*)?)/
+  
+  /** below imaginary part of any complex number
+   * 1.  5.898i       --> matched 5.898
+   * 2. +5.434i       --> matched +5.434
+   * 3. -5.434i       --> matched -5.434
+   * 4. +  5.434i     --> matched +  5.434
+   * 5. 5.898i  + 9.8 --> matches 5.898
+   * 6. +9.8-5.898i   --> matches -5.898
+   * 7. +9.8+5.898i   --> matches +5.898
+   */
+  private static COMPLEX_IMAGINARY_STRING_MATCH_EXP = /(?<imaginary>[\-\+]?\s*\d+(\.\d+)?)?\s*i/
 
   a: BigDecimal
   b: BigDecimal
 
   constructor(a : BigDecimal, b : BigDecimal){
+    super();
     this.a = a;
     this.b = b;
   }
+
+  zero(){return ZERO}
+  
+  one(){return ONE}
 
   set({a, b} : {a : BigDecimal | undefined, b : BigDecimal | undefined}) {
     if(a) this.a = a;
@@ -32,10 +57,33 @@ class Complex implements C {
 
   static parse(a : Ri | Complex , b : Ri | undefined = undefined) {
     if (typeof a === 'string' && !b) { // complex number as string
-      var match = a.match(Complex.COMPLEX_STRING_MATCH_EXP)
-      if(!match) throw new InvalidNumberFormatError(`${a} not in fraction format ${Complex.COMPLEX_STRING_MATCH_EXP}`)      
-      return new Complex(decimal(match.groups?.real || 0), decimal(match.groups?.imaginary || 0));
+      var match1 = a.match(Complex.COMPLEX_REAL_STRING_MATCH_EXP)
+      var match2 = a.match(Complex.COMPLEX_IMAGINARY_STRING_MATCH_EXP)
+      if(!match1 && !match2) throw new InvalidNumberFormatError(`${a} not in fraction format ${Complex.COMPLEX_REAL_STRING_MATCH_EXP} || ${Complex.COMPLEX_IMAGINARY_STRING_MATCH_EXP}`)      
+      
+      var i_ : number | string = 0, r_ : number | string = 0;
+
+      /**
+       * Imaginary Part Matching
+       */
+      if(match2?.groups && !match2.groups.imaginary) i_ = 1; // matches a + i || i
+      else if (match2?.groups && match2.groups.imaginary) { // matches b in xx + bi || bi 
+        i_ = match2.groups.imaginary;
+      }
+
+      /**
+       * Real Part Matching
+       */
+      if(match1?.groups && match1.groups.imaginary ) {  // matches ai + b
+        [i_, r_] = [match1.groups.imaginary, match1.groups.real]; // this matches imaginary part also, which same as above
+      }
+      else if(match1?.groups && match1.groups.real2) { // matches a in  a + xxi || a
+        r_ = match1.groups.real2;
+      }
+
+      return new Complex(decimal(r_), decimal(i_))
     } 
+    else if (typeof a === "number" && !b) return new Complex(decimal(a), decimal(0));
     else if (a instanceof Complex) { // as complex number
       return a.clone();
     }
@@ -88,13 +136,14 @@ class Complex implements C {
     return new Complex(this.a, this.b.addinv());
   }
 
-  modulus () {
-    return 
+
+  square() {
+    return this.mul(this);
   }
 
-  // mag = this.modulus;
-
-  // abs = this.modulus;
+  abs () {
+    return this.a.square().add(this.b.square()).sqrt() // sqrt( a ^ 2 + b ^ 2 )
+  }
 
   real () {
     return this.a.clone();
@@ -109,3 +158,7 @@ class Complex implements C {
 export const complex = (a :Ci , b : Ri | undefined = undefined)=>{
   return Complex.parse(a, b);
 }
+
+
+const ZERO = complex(0);
+const ONE = complex(1);

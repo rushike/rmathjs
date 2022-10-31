@@ -1,4 +1,4 @@
-import {gcd, is_prime_slow, pow, factorial, primes} from "./functions/basic"
+import {gcd, pow, factorial} from "./functions/basic"
 
 import {miller_rabin_primality} from "./functions/primes"
 import { random_int } from "./functions/random";

@@ -6,18 +6,19 @@ import { Zi } from "./Z";
 export type Qi = Zi | Rational;
 export type Q = Rational;
 
-interface Fraction extends N{
+interface Fraction{
   n : bigint, // numerator
   d : bigint // denominator
 }
 
-export class Rational implements Fraction{
+export class Rational extends N implements Fraction{
   private static FRACTION_STRING_MATCH_EXP = /(?<numerator>[\d]+)\s*\/\s*(?<denominator>[\d]+)/
 
   n : bigint;
   d : bigint;
 
   constructor (n : Zi, d : Zi, simple = true) {
+    super()
     var [n_, d_] = this.simplify(n, d, simple);
     this.n = n_;
     this.d = d_;

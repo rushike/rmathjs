@@ -1,9 +1,36 @@
 import { min } from "lodash";
+import { POW_10 } from "../constants";
+import { NotImplementedError } from "../error";
 import { factorial } from "../functions/basic";
 
 export type Zi = number | bigint | string;
 
 export type Z = number | bigint;
+
+
+/**
+ * Computes GCD using euclidean algorithm
+ * @param a 
+ * @param b 
+ * @returns 
+ */
+ export function _gcd(a : Z, b : Z) {
+  var a_ = BigInt(a),
+  b_ = BigInt(b),
+  r_;
+
+  while(b_) {
+    r_ = a_ % b_;
+    a_ = b_;
+    b_ = r_;
+  } return a_;
+}
+
+export function _lcm(a : Z, b : Z) {
+  var a_ = BigInt(a), b_ = BigInt(b);
+  return (a_ * b_) / _gcd(a_, b_);
+}
+
 
 
 export const _oddprod = (m : bigint = 1n, n:bigint = 10n) : bigint => {
@@ -45,6 +72,18 @@ export const _factorial = (n : Z) => {
     return fact(half) * _pow(2, half) * _oddprod(1n, x);
   }
   return fact(n_);
+}
+
+export const _log = (a : Z, b : Z = 10) => {
+  var n_ = BigInt(a),
+    b_ = BigInt(b),
+    lg = 0n
+    ;
+    while(n_ > 1) {
+      n_ /= b_;
+      lg++;
+    }
+    return lg;
 }
 
 export const _powm = (a : bigint | number, n : bigint | number, m : number | bigint ) : bigint => {
@@ -91,9 +130,25 @@ export const _min = (...rest : Z[]) => {
   var min_ : Z = Infinity;
   rest.forEach(num=>{
     if(num < min_) min_ = BigInt(num);
-  }); return BigInt(min_)
+  }); return BigInt(min_);
 }
 
+export const _max = (...rest : Z[]) => {
+  var max_ : Z = -Infinity;
+  rest.forEach(num=>{
+    if(num > max_) max_ = BigInt(num);
+  }); return BigInt(max_);
+}
+
+export function shiftleft(n : number | bigint,x : number | bigint, b = 10) {
+  return BigInt(n) * _pow(b, x);
+}
+
+/**
+ * For non int n it returns [n]
+ * @param n number | bigint | string
+ * @returns [n] bigint
+ */
 export const bignum =  (n : Zi) => {
   if(typeof n === 'number') return BigInt(Math.floor(n));
   return BigInt(n);

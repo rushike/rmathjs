@@ -1,4 +1,4 @@
-import {_factorial, _oddprod, _pow, _serialfactorial} from "../../src/dtype/Z"
+import {shiftleft, _factorial, _oddprod, _pow, _serialfactorial} from "../../src/dtype/Z"
 
 describe("test integer (Z) functions : ", ()=>{
   it("test odd product of n -> ", ()=>{
@@ -23,5 +23,14 @@ describe("test integer (Z) functions : ", ()=>{
       ;
     var res = n.map(n_=>_pow(2, n_));
     expect(res).toEqual(expected);
+  })
+
+  it("test leftshift function ->", ()=>{
+    var n = [1, 2, 3, 7, 57, 61], 
+      x = [1, 3, 6, 130, 7, 5]
+    ;
+    
+    var res = Array.from(n, (_, i) => shiftleft(n[i], x[i]));
+    
   })
 })
