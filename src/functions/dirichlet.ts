@@ -10,9 +10,9 @@ type Fn = (n : number | bigint) => (number | bigint);
  * @TODO implement multiple level dirichelt convolution
  */
 class Dirichlet {
-  private fx : Fn;
-  private fx_ : Fn[] = [];
-  private gx : Fn = u;
+  fx : Fn;
+  fx_ : Fn[] = [];
+  gx : Fn = u;
 
   constructor(fx : Fn) {
     this.fx = fx;

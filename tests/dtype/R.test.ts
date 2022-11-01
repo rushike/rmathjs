@@ -25,8 +25,12 @@ describe("test real (R) dtype : ", ()=>{
     var a = bigdecimal("-100.212"),
       expected = decimal(100.212)
     ;
+     
 
     var res = a.abs();
+
+    console.log(res, expected);
+    
 
     expect(res).toEqual(expected)
     
@@ -76,6 +80,18 @@ describe("test real (R) dtype : ", ()=>{
     expect(res).toEqual(expected);
   })
 
+  it("test mod method -> ", ()=>{
+    var a = [1, 12.1, 123.122, 32.12345, 323.5, 909.1234].map(decimal),
+      m = decimal(123.210909),
+      expected = [ 1, 12.1, 123.122, 32.12345, 77.078182, 46.647037 ].map(decimal)
+    ;
+
+    var res = a.map(n=>n.mod(m));
+
+    expect(res).toEqual(expected)
+
+  })
+
   it("test floor function -> ", ()=>{
     var a = decimal(67.7879876887);
     expect(a.floor()).toBe(67n);
@@ -110,9 +126,10 @@ describe("test real (R) dtype : ", ()=>{
   it("test powz method -> ", ()=>{
     var a = decimal("1.73"),
       n = [0, 1, 3, 7, 20],
-      expected = ["1.0", "1.73", "5.177717", "46.37914326451397", "57666.2967582119225852461315633641336800581201"].map(decimal)
+      expected = ["1.0", "1.73", "5.177717", "46.37914326451397", "57666.29675821192258524613156336413368"].map(decimal)
       ;
-    var res = n.map(n=>a.powz(n));
+
+      var res = n.map(n=>a.powz(n));
     
     expect(res).toEqual(expected);
   })
@@ -140,10 +157,10 @@ describe("test real (R) dtype : ", ()=>{
   it("test nroot function -> ", ()=>{
     var a = decimal(94726.60004000209),
       n = decimal(9),
-      expected = decimal("3.57224574619272363069927149115523392407182692585049491271152897570245622639144292738248494810421189275321821334278739034607453733")
+      expected = decimal("3.57224574619272363069927149115525")
       ;
 
-    var res= a.nroot(n);
+    var res= a.nroot(n);    
 
     expect(res).toEqual(expected);
     
@@ -156,6 +173,8 @@ describe("test real (R) dtype : ", ()=>{
 
     var res = e.toprecision(64)
 
+    console.log(res, expected);
+    
 
     expect(res).toEqual(expected)
     

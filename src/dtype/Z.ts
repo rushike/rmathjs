@@ -77,13 +77,28 @@ export const _factorial = (n : Z) => {
 export const _log = (a : Z, b : Z = 10) => {
   var n_ = BigInt(a),
     b_ = BigInt(b),
-    lg = 0n
+    d_ = BigInt(b),
+    i_ = 1n,
+    lg = 0n,
+    temp,
+    iter = 0
     ;
-    while(n_ > 1) {
-      n_ /= b_;
-      lg++;
-    }
-    return lg;
+    while(n_ > 1n) {
+      n_ /= d_;
+      lg += i_;
+      d_ *= b_;
+      i_++;
+      iter++;
+      temp = n_ / d_;
+      if (n_ < b_) break;
+      
+      while(temp == 0n && i_ > 0n) { // fallback
+        d_ /= b_;
+        i_--;
+        temp = n_ / d_;
+        iter++;
+      }
+    } return lg;
 }
 
 export const _powm = (a : bigint | number, n : bigint | number, m : number | bigint ) : bigint => {

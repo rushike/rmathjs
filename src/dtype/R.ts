@@ -12,7 +12,7 @@ export type Config = {
 }
 
 const CONFIG : Config = {
-  precision : 256
+  precision : 32
 }
 
 export function config(c = {}) {
@@ -43,7 +43,7 @@ export interface Decimal {
   n : bigint,  // number
   b : bigint,  // number system base
   e : bigint,  // base exponent in number system
-  p : bigint   // precision
+  p? : bigint   // precision
 }
 
 export class BigDecimal extends N implements Decimal {
@@ -54,7 +54,7 @@ export class BigDecimal extends N implements Decimal {
   n : bigint;
   b : bigint;
   e : bigint;
-  p : bigint;
+  p? : bigint;
   
 
   constructor(n : Z, b : Z = 10, e : Z = 0, p : Z | undefined = undefined) {
@@ -63,7 +63,8 @@ export class BigDecimal extends N implements Decimal {
     this.n = n; // integer part
     this.b = b; // number system
     this.e = e;  // number exponent
-    this.p = _log(this.n, this.b); // precision by default
+    // if(p) this.p = BigInt(p);
+    // this.p = _log(this.n, this.b); // taking huge time so commented out
     // this._precision();
   }
 
@@ -136,11 +137,11 @@ export class BigDecimal extends N implements Decimal {
   }
 
   private _precision() {
-    console.log("this before : ", this);
+    // console.log("this before : ", this);
     
-    this.n /= _pow(this.b, this.e - this.p); 
-    this.e = this.p;
-    console.log("this after : ", this);
+    // this.n /= _pow(this.b, this.e - this.p); 
+    // this.e = this.p;
+    // console.log("this after : ", this);
     
   }
 
@@ -150,7 +151,7 @@ export class BigDecimal extends N implements Decimal {
     ;
     a_.n /= _pow(10, a_.e - p_);
     a_.p = _log(a_.n, a_.b);
-    a_.e = p_;
+    a_.e = _log(a_.n, a_.b); // this temp fix @TODO : implement 'e' correctly with 'p' 
     return a_;
   }
 
@@ -172,7 +173,6 @@ export class BigDecimal extends N implements Decimal {
     if (a_.n < 0n) a_.n = -a_.n;
     return a_ ; 
   }
-
 
   add(b : Ri) {
     var a_ = this.clone(),
@@ -261,6 +261,25 @@ export class BigDecimal extends N implements Decimal {
     return new BigDecimal(num, a_.b, index);
   }
 
+  mod(n : Ri) {
+    var n_ = BigDecimal.parse(n),
+      a_ = this.clone()
+    
+    ;
+    if (a_.b != n_.b) throw new NotImplementedError(`mod method not implemented on different number system bases a.base : ${a_.b}, b.base : ${n_.b}`)
+    
+    var num = (a_.n * _pow(a_.b, n_.e - a_.e)) % n_.n,
+    index = n_.e
+    ;
+    // log(a_, n_, num, index)
+    if (index < 0) { // if index is greater than precision, we decrease precision to required level
+      num = num * _pow(a_.b, index);
+      index = 0n;
+    }
+
+    return new BigDecimal(num, a_.b, index);
+  }
+
   mulinv() : BigDecimal {return super.mulinv()}
 
   addinv() : BigDecimal {return super.addinv()}
@@ -299,28 +318,6 @@ export class BigDecimal extends N implements Decimal {
   square() : BigDecimal {return super.square()}
 
   sqrt(precision : Z | undefined = undefined) {
-    // var
-    //   n_ = this.clone(),
-    //   iter_ = 1000,
-    //   nratio = n_.div(2),
-    //   x0 = ONE,
-    //   xn = x0,
-    //   A, B, C
-    //   ;
-    // /**
-    //  * A = ( n / 2 ) * (1 / x)
-    //  * B = x / 2
-    //  * C = B - A
-    //  * xn = xn - C
-    //  */
-    // for(var i_ = 0; i_ < iter_; i_++) {
-    //   A =  ONE.div(xn).mul(nratio);
-    //   B = xn.div(2),
-    //   C = B.sub(A)
-
-    //   xn = xn.sub(C)
-    // } return xn
-
     return this.nroot(2) // Halley Gives Fast Convergence than Newton - Raphsonß
   }
 
@@ -385,14 +382,9 @@ export class BigDecimal extends N implements Decimal {
     var
       a_ = this.clone(), 
       n_ = a_.floor(),
-      b_ = b ? BigInt(b) : a_.b,
-      lg = 0n
+      b_ = b ? BigInt(b) : a_.b
     ;
-    while(n_ > 1) {
-      n_ /= b_;
-      lg++;
-    }
-    return lg;
+    return _log(n_, b_)
   }
 }
 

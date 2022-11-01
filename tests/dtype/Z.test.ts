@@ -1,4 +1,4 @@
-import {shiftleft, _factorial, _oddprod, _pow, _serialfactorial} from "../../src/dtype/Z"
+import {shiftleft, _factorial, _log, _oddprod, _pow, _serialfactorial} from "../../src/dtype/Z"
 
 describe("test integer (Z) functions : ", ()=>{
   it("test odd product of n -> ", ()=>{
@@ -15,6 +15,15 @@ describe("test integer (Z) functions : ", ()=>{
     var res = _factorial(37);
     expect(res).toBe(13763753091226345046315979581580902400000000n)
     
+  })
+
+  it("test _log function -> ", ()=>{
+    var n = [1, 123, 129093, 910291221212, 121219218928212n, 4121323827947628374682736582763857687265287367867464353424324325657n],
+      b_ = 10n,
+      expected = [ 0n, 2n, 5n, 11n, 14n, 66n ]
+    ;
+    var res = n.map(n_ =>_log(n_, b_));
+    expect(res).toEqual(expected);
   })
 
   it("test _pow function -> ", ()=>{

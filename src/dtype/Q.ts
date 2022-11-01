@@ -27,7 +27,7 @@ export class Rational extends N implements Fraction{
   simplify(n : Zi, d : Zi, simple = true) {   
     var n_ = BigInt(n),
       d_ = BigInt(d),
-      gcd_ = simple ? gcd(n_, d_) : 1n;
+      gcd_ = simple ? BigInt(gcd(n_, d_)) : 1n;
       if (gcd_ < 0) gcd_ *= -1n;
     return [n_ / gcd_, d_ / gcd_];
   }
@@ -59,7 +59,7 @@ export class Rational extends N implements Fraction{
   add(b : Qi) {
     var a_ = this.clone(),
     b_ = Rational.parse(b),
-    d_ = lcm(a_.d, b_.d),
+    d_ = BigInt(lcm(a_.d, b_.d)),
     n_ = a_.n * (d_ / a_.d) + b_.n * (d_ / b_.d)
     ;
     return new Rational(n_, d_);
@@ -68,7 +68,7 @@ export class Rational extends N implements Fraction{
   sub(b : Qi) {
     var a_ = this.clone(),
     b_ = Rational.parse(b),
-    d_ = lcm(a_.d, b_.d),
+    d_ = BigInt(lcm(a_.d, b_.d)),
     n_ = a_.n * (d_ / a_.d) - b_.n * (d_ / b_.d)
     ;
     return new Rational(n_, d_);

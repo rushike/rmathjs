@@ -32,7 +32,9 @@ export class Complex extends N implements Cx {
    * 7. +9.8+5.898i   --> matches +5.898
    */
   private static COMPLEX_IMAGINARY_STRING_MATCH_EXP = /(?<imaginary>[\-\+]?\s*\d+(\.\d+)?)?\s*i/
-
+  
+  // In testing
+  private static COMPLEX_STRING_MATCH_EXP = /^(?:(?<real>\d+(?:(?:\.\d+)?(?:e[+\-]\d+)?)?)?(?:[+\-]))?(?<imaginary>\d+(?:(?:\.\d+)?(?:e[+\-]\d+)?)?)?[iI]$/
   a: BigDecimal
   b: BigDecimal
 
