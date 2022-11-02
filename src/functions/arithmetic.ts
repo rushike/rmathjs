@@ -1,4 +1,4 @@
-import { pow } from "./basic";
+import { pow } from "./elementary";
 import { factorize, factorize$k, prime_factor_count, prime_factor_count$1 } from "./factors";
 import { miller_rabin_primality } from "./primes";
 

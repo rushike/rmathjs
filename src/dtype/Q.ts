@@ -1,5 +1,5 @@
 import { InvalidNumberFormatError } from "../error";
-import { gcd, lcm } from "../functions/basic";
+import { gcd, lcm } from "../functions/elementary";
 import { N } from "./N";
 import { Zi } from "./Z";
 

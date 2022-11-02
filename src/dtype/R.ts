@@ -5,7 +5,7 @@ import { bignum, Z, _log, _min, _pow} from "./Z";
 
 export type Ri = BigDecimal | string | bigint | number;
 
-export type R = BigDecimal | bigint | number
+export type R = BigDecimal
 
 export type Config = {
   precision : bigint | number
@@ -149,9 +149,9 @@ export class BigDecimal extends N implements Decimal {
     var a_ = this.clone(),
       p_ = BigInt(precision)
     ;
-    a_.n /= _pow(10, a_.e - p_);
-    a_.p = _log(a_.n, a_.b);
-    a_.e = _log(a_.n, a_.b); // this temp fix @TODO : implement 'e' correctly with 'p' 
+    a_.n /= _pow(10, a_.e - p_ - 1n);
+    // a_.p = _log(a_.n, a_.b);
+    a_.e = _log(a_.n, a_.b) // this temp fix @TODO : implement 'e' correctly with 'p' 
     return a_;
   }
 
@@ -174,6 +174,8 @@ export class BigDecimal extends N implements Decimal {
     return a_ ; 
   }
 
+  plus(b : Ri) {return this.add(b)}
+
   add(b : Ri) {
     var a_ = this.clone(),
       b_ = BigDecimal.parse(b)
@@ -187,6 +189,9 @@ export class BigDecimal extends N implements Decimal {
     
     return new BigDecimal(a_.n + b_.n, a_.b, a_.e);
   }
+
+
+  minus(b : Ri) {return this.sub(b)}
 
   sub(b : Ri) {
     var a_ = this.clone(),
@@ -235,6 +240,8 @@ export class BigDecimal extends N implements Decimal {
 
     return new BigDecimal(num, a_.b, index);
   }
+
+  by(b : Ri) {return this.div(b)}
 
   div(b : Ri, precision : Z = CONFIG.precision) {
     var p_ = BigInt(precision), 

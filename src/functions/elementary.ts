@@ -1,6 +1,6 @@
-import { LN2_STR, PI_STR } from "../constants";
+import { LN2_STR, PI_2_STR, PI_STR } from "../constants";
 import { C, Ci, complex, Complex } from "../dtype/C";
-import { BigDecimal, decimal, R, Ri } from "../dtype/R";
+import { BigDecimal, decimal, Ri, R } from "../dtype/R";
 import { Z, _factorial, _gcd, _lcm, _pow, _powm } from "../dtype/Z";
 import { NotImplementedError } from "../error";
 
@@ -93,7 +93,7 @@ export function pow(a : bigint | number, n : bigint | number, m : number | bigin
 }
 
 
- export function powz(a : Ci, n : Z, m : Z | undefined = undefined) : C {
+ export function powz(a : Ci, n : Z, m : Z | undefined = undefined) : C | R | Z {
   if (typeof a === "number" || typeof a === "bigint" ) {
     if(m) return _powm(a, n, m);
     return _pow(a, n);
@@ -106,7 +106,7 @@ export function pow(a : bigint | number, n : bigint | number, m : number | bigin
  * For small x uses exp1, for large x uses exp0
  * @param x 
  */
-export function exp(x : Ci, precision : Z = 100n) : R {
+export function exp(x : Ci, precision : Z = 100n) : BigDecimal {
   if (x instanceof Complex) throw new NotImplementedError(`Not implemented for x = ${x} complex data type`)
   return exp0(x)
 }
@@ -119,7 +119,7 @@ export function exp(x : Ci, precision : Z = 100n) : R {
  * @param x complex
  * @returns e ^ x
  */
-export function exp0(x : Ci) : R {
+export function exp0(x : Ci)  {
   if (x instanceof Complex) throw new NotImplementedError(`Not implemented for x = ${x} complex data type`)
   var x_ = decimal(x), // x
     x0 = decimal(1),  // initial term
@@ -178,11 +178,11 @@ export function exp2(x : C) : R{
   } return xn
 }
 
-export function log(n : R, b : R) {  
+export function log(n : Ri, b : Ri) {  
   return decimal(ln(n)).div(ln(b));
 }
 
-export function ln(n : R) : R{
+export function ln(n : Ri) : BigDecimal{
   // represent n as 2 ^ r * (1 + f)
   var n_ = decimal(n),
     r = n_.log$characteristic(2),
@@ -203,11 +203,11 @@ export function ln(n : R) : R{
   return ln2r.add(an.mul(f_))
 }
 
-export function sin(x : R) : R {
+export function sin(x : Ri) : R {
   var
     M = decimal(PI_STR.slice(0, 32)).mul(2),
     x_ = decimal(x).mod(M),
-    s_ = [0, 1].includes(Number(x_.div(M.div(4)).floor())) ? 1n : -1n,
+    // s_ = [0, 1].includes(Number(x_.div(M.div(4)).floor())) ? 1n : -1n,
     x_2 = x_.square(), // x ^ 2
     x0 = decimal(1),
     one = x0.one(),   // 1
@@ -227,11 +227,11 @@ export function sin(x : R) : R {
     return an.mul(x_);
 }
 
-export function cos(x : R) : R {
+export function cos(x : Ri) : R {
   var
     M = decimal(PI_STR.slice(0, 32)).mul(2),
     x_ = decimal(x).mod(M),
-    s_ = [0, 3].includes(Number(x_.div(M.div(4)).floor())) ? 1n : -1n,
+    // s_ = [0, 3].includes(Number(x_.div(M.div(4)).floor())) ? 1n : -1n,
     x_2 = x_.square(), // x ^ 2
     x0 = decimal(1),
     one = x0.one(),   // 1
@@ -255,11 +255,118 @@ export function cos(x : R) : R {
     return an;
 }
 
-export function tan(x : R) : R {
-  return decimal(sin(x)).div(cos(x))
+export function tan(x : Ri) : R {
+  return sin(x).div(cos(x))
+}
+
+export function arcsin(x : Ri) : R {
+  var x_ = decimal(x),
+    x_2 = x_.square(), // x  ^ 2
+    iter_ = 4n,
+    xn = decimal(iter_).mulinv(),   // xn th term
+    d1
+  ;
+
+  /**
+   * d1 = (2i - 1) / 2i
+   * xn = 1 / (2i -1) - d1 * xn
+   */
+  for(var i_ = iter_; i_ > 0n; i_--) {
+    d1 = decimal(2n * i_ - 1n);
+    xn = d1.mulinv().plus(
+      d1.div(2n * i_).mul(x_2).mul(xn)
+    )
+  } return xn.mul(x_);
 }
 
 
+export function arccos(x : Ri) : R {
+  return decimal(PI_2_STR).minus(arcsin(x))
+}
+
+export function arctan(x : Ri) : R {
+  var x_ = decimal(x),
+    x_2 = x_.square(), // x  ^ 2
+    iter_ = 100n,
+    xn = decimal(iter_).mulinv(),   // xn th term
+    d1 = 1n, d2 = 2n, xt, xk = decimal(1), xp
+  ;
+  /**
+   * d1 = 2i + 1
+   * xn = 1 / d1 - xn * x^2
+   */
+  for(var i_ = iter_ - 1n; i_ >= 0n; i_--) {
+    d1 = 2n * i_ + 1n;
+    
+    xn = decimal(d1).mulinv().minus(
+      x_2.mul(xn)
+      ) // xn = 1 / (2i + 1) - x^2 * xn
+      // console.log("d1 : ", d1, xn, xn.mul(x_));
+  }
+  return xn.mul(x_)
+}
+
+
+/**
+ * sinh (x) = (e ^ 2x  - 1 ) / (2 * e ^ x)
+ * @param x 
+ * @returns 
+ */
+export function sinh(x : Ri) : R  {
+  var e_x_ = exp(x),
+    e_2x_ = e_x_.square()
+  ;
+  
+  return e_2x_.minus(1).by(
+    e_x_.mul(2)
+  )
+}
+
+export function cosh(x : Ri) : R {
+  var e_x_ = exp(x),
+    e_2x_ = e_x_.square()
+  ;
+  
+  return e_2x_.plus(1).by(
+    e_x_.mul(2)
+  )
+}
+
+export function tanh(x : Ri) : R {
+  var x_ = decimal(x),
+    e_2x_ = exp(x_.mul(2)); 
+  ;
+  return e_2x_.sub(1).div(e_2x_.add(1));
+}
+
+
+export function arsinh(x : Ri) : R{
+  var x_ = decimal(x),
+    xi = x_.plus(
+          x_.square().plus(1).sqrt()
+        ) // x + sqrt ( x ^ 2 + 1)
+  ;
+  return ln(xi);
+}
+
+export function arcosh(x : Ri) : R{
+  var x_ = decimal(x),
+    xi = x_.plus(
+          x_.square().minus(1).sqrt()
+        ) // x + sqrt ( x ^ 2 + 1)
+  ;
+  return ln(xi);
+}
+
+export function artanh(x : Ri) : R{
+  var x_ = decimal(x),
+    xi = x_.plus(1).by(
+              x_.minus(1).addinv()
+            ) // ( x + 1 ) / (x - 1)
+  ;
+  
+  return ln(xi).by(2);
+}
 /**
  * Complex Functions
  * aim to define all real function over complex

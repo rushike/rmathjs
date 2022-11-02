@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { E } from "../../src/constants";
+import { E_STR } from "../../src/constants";
 import {BigDecimal, bigdecimal, decimal} from "../../src/dtype/R"
 
 describe("test real (R) dtype : ", ()=>{
@@ -167,8 +167,8 @@ describe("test real (R) dtype : ", ()=>{
   })
 
   it("test toprecision -> ", ()=>{
-    var e = decimal(E),
-      expected = decimal("2.7182818284590452353602874713526624977572470936999595749669676277")
+    var e = decimal(E_STR),
+      expected = decimal("2.71828182845904523536028747135266249775724709369995957496696762772")
     ;
 
     var res = e.toprecision(64)

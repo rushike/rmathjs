@@ -1,7 +1,7 @@
 import { min } from "lodash";
 import { POW_10 } from "../constants";
 import { NotImplementedError } from "../error";
-import { factorial } from "../functions/basic";
+import { factorial } from "../functions/elementary";
 
 export type Zi = number | bigint | string;
 

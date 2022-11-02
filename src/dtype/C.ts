@@ -4,7 +4,7 @@ import { decimal, R, Ri, BigDecimal } from "./R"
 
 export type Ci = Complex | Ri;
 
-export type C = Complex | R;
+export type C = Complex;
 
 export interface Cx {
   a : BigDecimal, // real part

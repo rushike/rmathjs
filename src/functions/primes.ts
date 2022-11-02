@@ -1,5 +1,5 @@
 import { MILLER_RABIN_K_BASES } from "../constants";
-import { gcd, pow } from "./basic";
+import { gcd, pow } from "./elementary";
 import { factor_out } from "./factors";
 
 /**

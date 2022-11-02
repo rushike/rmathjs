@@ -12,7 +12,7 @@ import {
   powz,
   pow,
   exp,
-} from "./functions/basic"
+} from "./functions/elementary"
 
 export default {
   /** Data Types */

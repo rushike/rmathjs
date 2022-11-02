@@ -1,6 +1,6 @@
 import { E_STR } from "../../src/constants";
 import { decimal } from "../../src/dtype/R";
-import { cos, exp, exp0, exp1, exp2, factorial, gcd, ln, log, pow, sin, tan } from "../../src/functions/basic";
+import { arccos, arcosh, arcsin, arctan, arsinh, artanh, cos, cosh, exp, exp0, exp1, exp2, factorial, gcd, ln, log, pow, sin, sinh, tan, tanh } from "../../src/functions/elementary";
 
 describe("test basic math operations : ", ()=>{
   it("test gcd(12252121211212212222n, 12345212121212122222n) -> ", ()=>{
@@ -36,7 +36,7 @@ describe("test basic math operations : ", ()=>{
     expect(res).toBe(true)
   })
 
-  it("test sine function -> ", ()=>{
+  it("test sin function -> ", ()=>{
     var x = [
             decimal(10.141592657),
             decimal(1.123)
@@ -79,21 +79,112 @@ describe("test basic math operations : ", ()=>{
     ].map(decimal)
 
     var res = x.map(tan);
+    expect(res).toEqual(expected)
+    
+  })
+
+  it("test sin-1 function -> ", ()=>{
+    var x = [0.92121],
+      expected = ["1.15905589278959967228511241816321"].map(decimal)
+    ;
+
+    var res = x.map(arcsin)
 
     expect(res).toEqual(expected)
     
   })
+
+  it("test cos-1 function -> ", ()=>{
+    var x = [0.1111],
+      expected = ["1.459466492689613578839494523096611"].map(decimal)
+    ;
+    var res = x.map(arccos).map(_=>_.toprecision(32))
+
+    expect(res).toEqual(expected)
+    
+  })
+
+  it("test tan-1 function -> ", ()=>{
+    var x = [0.92121],
+      expected = ["0.74441051913301442690307815496615"].map(decimal)
+      ;
+    var res = x.map(arctan)
+
+    expect(res).toEqual(expected);
+  })
+
+  it("test sinh function -> ", ()=>{
+    var x = [0.62121],
+      expected = ["0.66194239384282883981513549539927"].map(decimal)
+    ;
+
+    var res = x.map(sinh)
+
+    expect(res).toEqual(expected)
+    
+  })
+
+  it("test cosh function -> ", ()=>{
+    var x = [0.41121],
+      expected = ["1.08574492855338370858291950729071"].map(decimal)
+    ;
+
+    var res = x.map(cosh)
+    
+    expect(res).toEqual(expected)
+  })
+
+  it("test tanh function -> ", ()=>{
+    var x = [0.11121],
+      expected = ["0.11075378747228855951823779059769"].map(decimal)
+    ;
+
+    var res = x.map(tanh)
+    
+    expect(res).toEqual(expected)
+  })
+
+
+  it("test arcsinh function -> ", ()=>{
+    var x = [3.91121],
+      expected = ["2.07160629745815026658498258121563n"].map(decimal) // actual is : 2.0729497794549505395905226852762308703519490465447945011118772682...
+    ;
+
+    var res = x.map(arsinh)
+    
+    expect(res).toEqual(expected)
+  })
+
+  it("test arcosh function -> ", ()=>{
+    var x = [1.99991],
+      expected = ["1.31690593125670375033163468865225n"].map(decimal) // actual is : 1.3169059338416737635781623762742034155969758885867746465538992866...
+    ;
+
+    var res = x.map(arcosh)
+    
+    expect(res).toEqual(expected)
+  })
+
+
+  it("test artanh function -> ", ()=>{
+    var x = [0.3991],
+      expected = ["0.42257796019967897371947785600898"].map(decimal)
+    ;
+
+    var res = x.map(artanh)
+    
+    expect(res).toEqual(expected)
+  })
+
 
   it("test log function -> ", ()=>{
     var x = [23230293],
       b = 10,
       expected = [decimal("7.36605468752217747101766084306403")]
     ;
-    console.log("expeted : ", expected);
     
     var res = x.map(_=>log(_, b)).map(_=>decimal(_))
-    console.log(res);
-    
+
     expect(res).toEqual(expected);
   })
 
@@ -102,7 +193,8 @@ describe("test basic math operations : ", ()=>{
       expected = [decimal("16.96096771766747913451544313441155")]
     ;
 
-    var res = x.map(ln).map(_=>decimal(_).toprecision(32))
+    var res = x.map(ln).map(_=>decimal(_))
+    
     expect(res).toEqual(expected);
   })
 

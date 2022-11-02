@@ -5,7 +5,7 @@ import {
   powz,
   pow,
   exp,
-} from "./basic"
+} from "./elementary"
 
 import {
   factor_out, 
