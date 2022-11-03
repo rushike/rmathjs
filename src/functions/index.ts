@@ -15,6 +15,7 @@ import {
 import {
   primes,
   is_prime,
+  pi,
   is_relatively_prime,
   sieve_of_eratosthenes,
   miller_rabin_primality
@@ -46,7 +47,8 @@ export default {
     is_prime,
     is_relatively_prime,
     sieve_of_eratosthenes,
-    miller_rabin_primality
+    miller_rabin_primality,
+    pi
   },
   arithmetic : {
     u,

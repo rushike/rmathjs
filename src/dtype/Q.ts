@@ -41,6 +41,10 @@ export class Rational extends N implements Fraction{
     return new Rational(this.n, this.d)
   }
 
+  toString() {
+    return `${this.n}/${this.d}`;
+  }
+
   static parse(a : Qi, b : Qi | undefined = undefined) {
     if(typeof a === 'string') {
       var match = a.match(Rational.FRACTION_STRING_MATCH_EXP)

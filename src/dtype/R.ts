@@ -156,7 +156,10 @@ export class BigDecimal extends N implements Decimal {
   }
 
   toString() {
-    return `BigDecimal(n : ${this.n}, b : ${this.b}, e : ${this.e})`
+    var D = _pow(this.b, this.e);
+    var int = this.n / D;
+    var frac = this.n % D;
+    return `${int}.${frac}`
   }
 
   lt(b : Ri) {

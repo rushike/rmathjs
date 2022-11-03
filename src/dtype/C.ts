@@ -57,6 +57,10 @@ export class Complex extends N implements Cx {
     return new Complex(this.a, this.b);
   }
 
+  toString() {
+    return `${this.a.toString()}+${this.b.toString()}i`
+  }
+
   static parse(a : Ri | Complex , b : Ri | undefined = undefined) {
     if (typeof a === 'string' && !b) { // complex number as string
       var match1 = a.match(Complex.COMPLEX_REAL_STRING_MATCH_EXP)

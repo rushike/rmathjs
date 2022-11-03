@@ -168,3 +168,4 @@ export const bignum =  (n : Zi) => {
   if(typeof n === 'number') return BigInt(Math.floor(n));
   return BigInt(n);
 }
+
