@@ -1,8 +1,18 @@
 
+# dtype
+### Z
+### R = BigDecimal
+  ```typescript
+  import {decimal} from "@rmath/rmathjs/lib"
+  var a = decimal(121);
+  var b = decimal(121.2121);
+  var c = decimal("12121212.12121213349898");
+  ```
+### C
+
 
 # Convections
-1. Function name in format 'xxx$_ddd' here underscrore is refer as -, ddd should any number
-2. Function name in format 'xxx$ddd' here ddd should number
+
 
 # Mentions / Motivation
 1. Regex helper -> https://regex101.com/r

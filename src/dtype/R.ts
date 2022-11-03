@@ -1,18 +1,75 @@
 import { InvalidNumberFormatError, NotImplementedError } from "../error";
+import { Try } from "../utils";
 import { N } from "./N";
-import { bignum, Z, _log, _min, _pow} from "./Z";
+import { bignum, Z, zFn, _log, _min, _pow} from "./Z";
 
 
 export type Ri = BigDecimal | string | bigint | number;
 
 export type R = BigDecimal
 
+export type TypeCheck = {
+  res : null | Z,
+  nums : bigint[][] | null[][]
+}
+/**
+ * Decimal 'd' represented as :
+ *    d = n * b ^ -e
+ * 
+ * e.g. 
+ *  0.323928398 = 323928398 * 10 ^ -9
+ *        here n = 323928398, b = 10, e = 9
+ */
+ export interface Decimal {
+  n : bigint,  // number
+  b : bigint,  // number system base
+  e : bigint,  // base exponent in number system
+  p : bigint   // precision
+}
+
 export type Config = {
-  precision : bigint | number
+  precision : bigint,
+  base : bigint
 }
 
 const CONFIG : Config = {
-  precision : 32
+  precision : 32n,
+  base : 10n
+}
+
+function parseargs(a : Ri) : Decimal {
+  if(typeof a === "bigint" || typeof a === "number") {
+    return {
+      n : BigInt(a),
+      b : CONFIG.base,
+      e : 0n,
+      p : -1n
+    }
+  }
+
+  throw new InvalidNumberFormatError(`Number a : ${a} not in specified number format.`)
+}
+
+function _shifleft(a : Decimal, k : BigInt) {
+  var {n, b, e, p} = a;
+  
+}
+
+function _add(a : Decimal, b : Decimal) {
+  if (a.b != b.b) throw new NotImplementedError(`add method not implemented on different bases a.base : ${a.b}, b.base : ${b.b}`)
+
+}
+
+function sub(a : Ri, b : Ri) {
+
+}
+
+function mul(a : Ri, b : Ri) {
+
+}
+
+function div(a : Ri, b : Ri) {
+
 }
 
 export function config(c = {}) {
@@ -22,29 +79,7 @@ export function config(c = {}) {
   })
 }
 
-export const bigdecimal = (x : Ri)=>{  
-  return BigDecimal.parse(x);
-}
-
-export const real = bigdecimal;
-
-export const decimal = bigdecimal;
-
-
-/**
- * Decimal 'd' represented as :
- *    d = n * b ^ -e
- * 
- * e.g. 
- *  0.323928398 = 323928398 * 10 ^ -9
- *        here n = 323928398, b = 10, e = 9
- */
-export interface Decimal {
-  n : bigint,  // number
-  b : bigint,  // number system base
-  e : bigint,  // base exponent in number system
-  p? : bigint   // precision
-}
+ 
 
 export class BigDecimal extends N implements Decimal {
   // @TODO use ^((?<integer>\d+)\.(?<fraction>\d*?[1-9]))0+$
@@ -54,7 +89,7 @@ export class BigDecimal extends N implements Decimal {
   n : bigint;
   b : bigint;
   e : bigint;
-  p? : bigint;
+  p : bigint;
   
 
   constructor(n : Z, b : Z = 10, e : Z = 0, p : Z | undefined = undefined) {
@@ -64,7 +99,7 @@ export class BigDecimal extends N implements Decimal {
     this.b = b; // number system
     this.e = e;  // number exponent
     // if(p) this.p = BigInt(p);
-    // this.p = _log(this.n, this.b); // taking huge time so commented out
+    this.p = _log(this.n, this.b); // taking huge time so commented out
     // this._precision();
   }
 
@@ -97,6 +132,10 @@ export class BigDecimal extends N implements Decimal {
     else if(b) this.b = BigInt(b);
     else if(e) this.e = BigInt(e);
     else if(p) this.p = BigInt(p);
+  }
+
+  get() {
+    return [this.n, this.b, this.e, this.p];
   }
 
   static parse(n : Ri) : BigDecimal{
@@ -400,3 +439,16 @@ const ZERO = new BigDecimal(0, 10, 0);
 const ONE = new BigDecimal(1, 10, 0);
 
 // export const INFINITY = new BigDecimal(Infinity, 10, 0);
+
+export const decimal = (a : Ri)=>{  
+  var a_ = parseargs(a);
+  return {
+    add : (b : Ri)=>add(a_, parseargs(b)),
+    sub : (b : Ri)=>sub(a, b),
+    mul : (b : Ri)=>mul(a, b),
+    div : (b : Ri)=>div(a, b),
+  }
+}
+export const real = decimal;
+
+export const bigdecimal = decimal;

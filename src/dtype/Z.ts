@@ -7,6 +7,23 @@ export type Zi = number | bigint | string;
 
 export type Z = number | bigint;
 
+export function _shiftleftn(n : number, k : number, b = 10) {
+  
+  // return BigInt(n) * _pow(b, k);
+}
+
+
+export function _shiftleft(n : bigint, k : number, b = 10) {
+  var nstr = n.toString(b),
+    zeros = "0".repeat(k);
+  return BigInt(nstr+zeros);
+  // return BigInt(n) * _pow(b, k);
+}
+
+export function _shiftright(n : bigint, k : bigint, b = 10n) {
+  return BigInt(n) / _pow(b, k);
+} 
+
 
 /**
  * Computes GCD using euclidean algorithm
@@ -153,10 +170,6 @@ export const _max = (...rest : Z[]) => {
   rest.forEach(num=>{
     if(num > max_) max_ = BigInt(num);
   }); return BigInt(max_);
-}
-
-export function shiftleft(n : number | bigint,x : number | bigint, b = 10) {
-  return BigInt(n) * _pow(b, x);
 }
 
 /**
