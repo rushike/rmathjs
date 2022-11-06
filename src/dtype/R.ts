@@ -1,12 +1,12 @@
 import { InvalidNumberFormatError, NotImplementedError } from "../error";
 import { Try } from "../utils";
 import { N } from "./N";
-import { bignum, Z, zFn, _log, _min, _pow} from "./Z";
+import { bignum, Z, _log, _min, _pow} from "./Z";
 
 
 export type Ri = BigDecimal | string | bigint | number;
 
-export type R = BigDecimal
+export type R = BigDecimal;
 
 export type TypeCheck = {
   res : null | Z,
@@ -21,10 +21,10 @@ export type TypeCheck = {
  *        here n = 323928398, b = 10, e = 9
  */
  export interface Decimal {
-  n : bigint,  // number
-  b : bigint,  // number system base
-  e : bigint,  // base exponent in number system
-  p : bigint   // precision
+  n : bigint | number,  // number
+  b : bigint | number,  // number system base
+  e : bigint | number,  // base exponent in number system
+  p : bigint | number  // precision
 }
 
 export type Config = {
@@ -82,25 +82,21 @@ export function config(c = {}) {
  
 
 export class BigDecimal extends N implements Decimal {
-  // @TODO use ^((?<integer>\d+)\.(?<fraction>\d*?[1-9]))0+$
-  private static DECIMAL_SIGN_MATCH_EXP = /^\s*(?<sign>-)/
-  private static DECIMAL_STRING_MATCH_EXP = /(?<integer>\s*[\d]+)(\.(?<fraction>[\d]+))?/
+  private static DECIMAL_STRING_MATCH_EXP = /(?<sign>[+-]?)([0]*)(?<integer>\d+)(\.(?<fraction>[\d]+))?/
 
-  n : bigint;
-  b : bigint;
-  e : bigint;
-  p : bigint;
+  n : bigint | number;
+  b : bigint | number;
+  e : bigint | number;
+  p : bigint | number;
   
 
-  constructor(n : Z, b : Z = 10, e : Z = 0, p : Z | undefined = undefined) {
+  constructor(n : Z, b : Z = 10, e : Z = 0, p : Z) {
     super();
-    [n, b, e] = BigDecimal.simplify(n, b, e);
-    this.n = n; // integer part
-    this.b = b; // number system
+    // [n, b, e] = BigDecimal.simplify(n, b, e);
+    this.n = n;  // integer part
+    this.b = b;  // number system
     this.e = e;  // number exponent
-    // if(p) this.p = BigInt(p);
-    this.p = _log(this.n, this.b); // taking huge time so commented out
-    // this._precision();
+    this.p = p;  // precision 
   }
 
   /**
@@ -140,21 +136,28 @@ export class BigDecimal extends N implements Decimal {
 
   static parse(n : Ri) : BigDecimal{
     if(typeof n === 'number' && Number.isInteger(n)) {
-      return new BigDecimal(BigInt(n), 10, 0);
-    } 
+      return new BigDecimal(n, 10, 0, Math.log10(n));
+    } else if (typeof n === 'bigint') {
+      return new BigDecimal(n, 10, 0, n.toString().length)
+    }
     else if(typeof n === 'number') {
       return BigDecimal.parse(n.toPrecision())
     } 
     else if(typeof n === 'string') {
-      const sign = n.match(BigDecimal.DECIMAL_SIGN_MATCH_EXP)?.groups?.sign ? -1n : 1n
       const match = n.match(BigDecimal.DECIMAL_STRING_MATCH_EXP)
       if (!match ) throw new InvalidNumberFormatError(`'${n}' not in decimal format ${this.DECIMAL_STRING_MATCH_EXP}`)
+      var s = match.groups?.sign || "", 
+        i = match.groups?.integer || "", 
+        f = match.groups?.fraction || "0"
+        ;
+      var nstr =  s + i + f;
+
+      var p_ = nstr.length,
+        n_ = p_ < 15 ? Number(nstr) : BigInt(nstr),// 147 ms
+        e_ = i.length,
+        b_ = 10;
       
-      var [int = "", frac = ""] = [match.groups?.integer, (match.groups?.fraction || "").replace(/\B0+$/, "")],
-      num  = int + frac,
-      base = 10,
-      exp  = frac.length;
-      return new BigDecimal(sign * bignum(num), BigInt(base), BigInt(exp));
+      return new BigDecimal(n_, b_, e_, p_);
     }
     else if (typeof n === 'bigint') {
       return new BigDecimal(n);
@@ -441,13 +444,14 @@ const ONE = new BigDecimal(1, 10, 0);
 // export const INFINITY = new BigDecimal(Infinity, 10, 0);
 
 export const decimal = (a : Ri)=>{  
-  var a_ = parseargs(a);
-  return {
-    add : (b : Ri)=>add(a_, parseargs(b)),
-    sub : (b : Ri)=>sub(a, b),
-    mul : (b : Ri)=>mul(a, b),
-    div : (b : Ri)=>div(a, b),
-  }
+  return BigDecimal.parse(a);
+  // var a_ = parseargs(a);
+  // return {
+  //   add : (b : Ri)=>add(a_, parseargs(b)),
+  //   sub : (b : Ri)=>sub(a, b),
+  //   mul : (b : Ri)=>mul(a, b),
+  //   div : (b : Ri)=>div(a, b),
+  // }
 }
 export const real = decimal;
 
