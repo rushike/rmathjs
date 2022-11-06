@@ -1,4 +1,4 @@
-<style>
+<!-- <style>
   .title {
     font-size: 72px;
     font-weight: 900;
@@ -21,9 +21,10 @@
 
 <h1 class = "title">
   <span class="title-initial">r</span><span class="title-name">math</span><span class="title-ext">js</span>
-  v1
-</h1>
+  v2
+</h1> -->
 
+<img src="./docs/img/logo.png" width="400">
 
 
 # Architecture
