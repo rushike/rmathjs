@@ -53,20 +53,24 @@ function opt(fn, ...args) {
   if(isanybigint) args = args.map(a=>BigInt(a));
   return fn(...args);
 }
-
-const opr = (castto = 'number')=>(fn, a, b, c) => {
-  if (typeof a === "number") {
-    if (typeof b === "number" && castto == 'number') 
-      if (typeof c === "number") 
-        return fn(a, b, c) // all are numbers
-    a = BigInt(a)
+function opr( fn, a, b = 1, c = 1, d = 1){
+  if (typeof c === "number") {
+    if (typeof b === "number") 
+      if (typeof a === "number") 
+        if(typeof d === "number")
+          return fn(a, b, c, d) // all are numbers
+    c = BigInt(c)
   }
   if (typeof b === "number") 
     b = BigInt(b)
-  if (typeof c === "number")
-    c = BigInt(c)
-  return fn(a, b, c); 
-};
+  if (typeof a === "number")
+    a = BigInt(a)
+  if (typeof d === "number")
+  d = BigInt(d)
+  return fn(a, b, c, d); 
+}
+
+
 
 const _powm = (a, n, m ) => {
   if (
@@ -117,8 +121,60 @@ N = 121121221212, k = 100;
 // var res = timeit(()=>shiftright2(N, k, 10), [], {name : "shiftright2_div opt1"}).perform(100000); // for some reason not working
 
 var a  = 11121212121212, b = 80, c = 112121212121212121n
-console.log(_log2(a) * b);
-console.log(opr('bigint')(_powm, a, b, c))
-console.log(opr('bigint')(_powm2,a, b, c))
-var res = timeit(()=>opr('bigint')(_powm, a, b, c), [], {name : "_powm opr1"}).perform(100000); // for some reason not working
-var res = timeit(()=>opr('bigint')(_powm2, a, b, c), [], {name : "powm2 opr"}).perform(100000); // for some reason not working
+// console.log(_log2(a) * b);
+// console.log(opr('bigint')(_powm, a, b, c))
+// console.log(opr('bigint')(_powm2,a, b, c))
+// var res = timeit(()=>opr('bigint')(_powm, a, b, c), [], {name : "_powm opr1"}).perform(100000); // for some reason not working
+// var res = timeit(()=>opr('bigint')(_powm2, a, b, c), [], {name : "powm2 opr"}).perform(100000); // for some reason not working
+
+
+function A (a1, a2, a3, a4, b1, b2, b3, b4 ) {
+  return {a : a1+b1, b : a2+b2, c : a3+b3,d: a4+b4}
+}
+
+function B({a1, a2, a3, a4}, {b1, b2, b3,b4}) {
+  return {a : a1+b1, b : a2+b2, c : a3+b3,d: a4+b4}
+  // return {a : a.a1 + b.b1, b : a.a2 + b.b2, c : a.a3 + b.b3, d : a.a4 + b.b4}
+}
+
+function C(a1, a2, a3, a4, b1, b2, b3, b4) {
+  if (typeof a1 === "object" && typeof a2 === "object") {
+    var {b1, b2,b3, b4} = a2;
+    var {a1, a2, a3, a4} = a1;
+  }
+  return {a : a1+b1, b : a2+b2, c : a3+b3,d: a4+b4}
+}
+
+var a1 = 1, a2 = 2, a3 = 3, a4 = 4, b1 = 5, b2 = 6, b3 = 7, b4 = 8 ;
+a = {a1, a2, a3, a4}, b = {b1, b2, b3, b4 }
+// console.log(A(a1, a2, a3, a4, b1, b2, b3, b4 ));
+// console.log(B(a, b));
+// console.log(C(a.a1, a.a2,a.a3,a.a4,b.b1, b.b2,b.b3,b.b4));
+
+// var res = timeit(()=>A(a1, a2, a3, a4, b1, b2, b3, b4), [], {name : "many args"}).perform(100000); // for some reason not working
+// var res = timeit(()=>B(a, b), [], {name : "2 object args"}).perform(100000); // for some reason not working
+// var res = timeit(()=>C(a.a1, a.a2,a.a3,a.a4,b.b1, b.b2,b.b3,b.b4), [], {name : "3 object args"}).perform(100000); // for some reason not working
+
+const isInt = (n) => n % 1 == 0
+
+
+var N = 21029102909039849038490039810920900129801982019809291092212387928739874928739482798;
+
+// console.log(Number.isInteger(N));
+// console.log(isInt(N), !(N % 1));
+// var res = timeit(()=>Number.isInteger(N), [], {name : "Number.isInterger"}).perform(100000); // for some reason not working
+// var res = timeit(()=>!(N % 1)/*isInt(N)*/, [], {name : "isInt"}).perform(100000); // for some reason not working
+
+function fn (a, b, c){
+  return c == 1? a ** b : c * a ** b
+}
+a = 2n;
+b = 1022n;
+c= 1n;
+var res = timeit(()=>a ** b, [], {name : "as is"}).perform(100000); // for some reason not working
+var res = timeit(()=>a ** b, [], {name : "as is"}).perform(100000); // for some reason not working
+var res = timeit(()=>a ** b, [], {name : "as is"}).perform(100000); // for some reason not working
+var res = timeit(()=>a ** b, [], {name : "as is"}).perform(100000); // for some reason not working
+var res = timeit(()=>c * a ** b , [], {name : "c mul as is"}).perform(100000); // for some reason not working
+var res = timeit(()=>c == 1? a ** b : c * a ** b, [], {name : "condn check as is"}).perform(100000); // for some reason not working
+var res = timeit(()=>fn(a, b, c), [], {name : "fn condn as is"}).perform(100000); // for some reason not working

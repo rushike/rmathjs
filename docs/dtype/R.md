@@ -72,3 +72,37 @@ Got below result
 total time :  852.6891250014305
 763.1353471875191 0.7631353471875191
 ```
+
+## BigDecimal
+BigDecimal implements Decimal interface and is immutable.
+
+
+## Functions
+### nroot
+Uses Halley Method to compute the nth root of real number.
+
+It uses below formula: 
+  $$x_{n+1} = x_{n} - \frac{f(x)}{f^{'}(x)} \left( 1 - \frac{f(x)}{f^{'}(x)} . \frac{f^{''}(x)}{2f^{'}(x)} \right ) ^{-1}$$
+
+For taking nth root ($ \sqrt[n]{a} $), we use $f(x) = x^n - a = 0$
+Here : 
+  $$ \frac{f(x)}{f^{'}(x)} = \frac{1}{n}\left( x_{k} - \frac{a}{x_{k}^{n-1}}  \right) $$
+  $$ \frac{f^{''}(x)}{2f^{'}(x)} = \frac{n-1}{2x_{k}} $$
+
+So, $x_{n+1}$ becomes
+  $$ x_{k+1} = 
+      x_{k} 
+      - \frac{1}{n}\left( x_{n} - \frac{a}{x^{n-1}}  \right)  
+      \left( 1 -  \frac{n - 1}{n} . \frac{1}{2x_{k}} . \left( x_{k} - \frac{a}{x^{n-1}}  \right) \right)
+  $$
+
+Algorithm uses : 
+1. Compute the constants in equation. 
+  - $ C1 = \frac{1}{n} $
+  - $ C2 = \frac{n-1}{n} $
+2. For $iter$ iterations: Compute 
+  - $ T1 = x_{k}^{n-1} $
+  - $ T2 = \frac{1}{2x_{k}} $
+  - $ T3 = \left( x_{k} - \frac{a}{x_{k}^{n-1}}  \right)$
+  So,
+  $$ x_{k+1}  = x_{k} - C1 \times T3 . \left( 1 - C2 \times T2 \times T3 \right)^{-1}$$
