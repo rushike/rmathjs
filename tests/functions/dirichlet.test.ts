@@ -9,6 +9,5 @@ describe("test dirichlet function and its property : ", ()=>{
     expect(totient).toBe(20n);
     var zero = dirichlet.f(mu).g(u)(25);
     expect(zero).toBe(0n);    
-    
   })
 })

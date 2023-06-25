@@ -23,7 +23,7 @@ import {
 
 import {
   u,
-  I,
+  N,
   mu,
   phi,
   mangoldt
@@ -52,7 +52,7 @@ export default {
   },
   arithmetic : {
     u,
-    I,
+    I: N,
     mu,
     phi,
     mangoldt,
