@@ -82,7 +82,7 @@ export const _minus = _sub;
 export function _mul(a : Z, b : Z) : Z {
   if (typeof a === 'number' && typeof b === 'number') {
     var res = a * b;
-    if (res < Number.MAX_SAFE_INTEGER) return res;
+    if (res < Number.MAX_SAFE_INTEGER && res > Number.MIN_SAFE_INTEGER) return res;
     return BigInt(a) * BigInt(b);
   }
   //@ts-ignore

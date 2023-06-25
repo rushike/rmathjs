@@ -4,7 +4,7 @@ import { N, ConfigType as ConfigTypeN, config as configN } from "./N";
 import { bignum, Z, _abs, _add, _div, _isinteger, _log, _max, _min, _mod, _mul, _mul3, _pow, _powz, _sub} from "./Z";
 
 
-export type Ri = Real | DecimalTypeObject | DecimalTypeArray |  string | bigint | number;
+export type Ri = Real | FloatingTypeObject | FloatingTypeArray |  string | bigint | number;
 
 export type R = Real | bigint | number;
 
@@ -12,11 +12,11 @@ export type R = Real | bigint | number;
 export type ConfigType = ConfigTypeN & {}
 
 const CONFIG : ConfigType = {
-  precision : 8, // in mode of base. So by default 32 digits.
+  precision : 20, // in mode of base. So by default 32 digits.
   base : 10,
 }
 
-export function config(c = {}) {
+export function configR(c = {}) {
   configN(c);
   Object.entries(c).forEach(([key, val]) =>{ 
     // @ts-ignore
@@ -24,27 +24,30 @@ export function config(c = {}) {
   })
 }
 
+export function getConfigR(key : keyof ConfigType) {
+  return CONFIG[key]
+}
 /**
  * DecimalTypeObject 'd' represented as :
  *    d = n * b ^ -e
  * 
  * e.g. 
- *  0.323928398 = 323928398 * 10 ^ 0 = 3239283980 * 10 ^ 0
+ *  0.323928398 = 0.323928398 * 10 ^ 0 = 3239283980 * 10 ^ 0
  *      here n = 323928398, b = 10, e = 0, p = 9
  *      here n = 3239283980, b = 10, e = 0, p =10
- *  787600000 = 7876 * 10 ^ 9 = 78760 * 10 ^ 8
+ *  787600000 = 0.7876 * 10 ^ 9 = 78760 * 10 ^ 8
  *      here n = 7876, b = 10, e = 9, p = 4
  *  
- *  Usually should simplified to least value of |e|
+ *  Usually should simplified to least value of |p - e|
  */
- export interface DecimalTypeObject {
+ export interface FloatingTypeObject {
    n : bigint | number,  // number
    b : number,  // number system base
    e : number,  // base exponent in number system
    p : number   // precision
 }
 
-export type DecimalTypeArray = [Z, number, number, number];
+export type FloatingTypeArray = [Z, number, number, number];
 
 function __create(n : Z, b : number, e : number, p : number){
   return new Real(n, b, e, p);
@@ -53,6 +56,7 @@ function __create(n : Z, b : number, e : number, p : number){
   /**
    * n is parse from string
    * Removes traling zeros from n and return new Real object
+   * // TODO : Improve the Logic 
    * @param n number
    * @param b base
    * @param e exponent
@@ -65,7 +69,6 @@ function simplify(n : Z, b? : number, e? : number, p? : number) {
     
     p = _log(_abs(n), b);
     
-    // e = f && !e ? p - --f : e;
     return new Real(n, b, e, ++p);
   }
 
@@ -97,7 +100,6 @@ function simplifyfrac(n : Z, b : number, f : number, precision? : number) {
   }
   
   var p = _log(_abs(n), b) + 1; // getting precision of number
-  // console.log("simplify frac after : ", n, b, _mod(n, b),f, e, p, p+f+e, precision);
   if (precision) return toprecision(n, b, p + f + e, p, precision);
   return new Real(n, b, p + f + e, p);
 }
@@ -106,7 +108,6 @@ function toprecision(n : Z, b : number, e : number, p : number, precision : numb
   if (p <= precision) return simplify(n, b, e, p);
   
   
-  // console.log("p, precission : ", p, precision);
   
   var n = _div(n, _pow(b, p - ++precision));
   
@@ -160,7 +161,6 @@ function __additive(n1 : Z, b1 : number, e1 : number, p1 : number, n2 : Z, b2 : 
   // if is integer
   if (e1 >= p1 && e2 >= p2) return simplify(fn(n1, n2), b1, e)
 
-  
   // fraction part / offset calculations
   var f = 0, 
     f1 = p1 - e1, 
@@ -177,7 +177,6 @@ function __additive(n1 : Z, b1 : number, e1 : number, p1 : number, n2 : Z, b2 : 
   
   var num = fn(n1, n2), // add n1 and n2
   exp = Number(_log(_abs(num), b1)) - f + 1; // calculate the integer size of res {num}
-  // console.log("coeff : s", n1, b1, e1, f1,p1, n2,b2,e2,f2,p2, f, ", num , exp : ", num, exp);
   return simplify(num, b1, exp);
 }
 
@@ -284,7 +283,12 @@ function __mod(n1 : Z, b1 : number, e1 : number, p1 : number, n2 : Z, b2 : numbe
 /**
  * Real Class is immutable
  */
-export class Real extends N  implements DecimalTypeObject {
+export class Real extends N  implements FloatingTypeObject {
+  
+  /**
+   * This regex matches any decimal representation for form 
+   * sign int[.frac][e32]
+   */
   private static DECIMAL_STRING_MATCH_EXP = /(?<sign>[+-]?)([0]*)(?<integer>\d+)(\.(?<fraction>[\d]+))?/
 
   readonly n : bigint | number;
@@ -295,7 +299,6 @@ export class Real extends N  implements DecimalTypeObject {
 
   constructor(n : Z, b : number = 10, e : number = 0, p : number) {
     super();
-    // [n, b, e] = Real.simplify(n, b, e);
     this.n = n < Number.MAX_SAFE_INTEGER ? Number(n) : BigInt(n);  // integer part
     this.b = b;  // number system
     this.e = e;  // number exponent
@@ -423,13 +426,15 @@ export class Real extends N  implements DecimalTypeObject {
   }
 
   mul(b_ : Ri, precision : number = CONFIG.precision) {
-    var b = parseargs(b_); // parsing other operand
+    if (this.n === 0 ) return ZERO // 0 * b = 0
 
-    if(this.eq(ZERO) || b.eq(ZERO)) return ZERO; // since 0 * b = a * 0 = 0    
-
-    if (this.eq(ONE)) return b; // since 1 * b = b
+    if (this.n === 1 && this.e === this.p) return real(b_); // since 1 * b = b
     
-    if (b.eq(ONE)) return this; // since a * 1 = a
+    var b = real(b_); // parsing other operand
+
+    if(b.n === 0) return ZERO; // since a * 0 = 0    
+    
+    if (b.n === 1 && b.e === b.p) return this; // since a * 1 = a
 
     return __mul(
       this.n, this.b, this.e, this.p,
@@ -535,9 +540,6 @@ export class Real extends N  implements DecimalTypeObject {
 
       T3 = xn.minus(this.div(T1)); // xn - k / T1
 
-      // console.log("T1 : ", T1);
-      // console.log("T2 : ", T2);
-      // console.log("T3 : ", T3);
 
       // console.log("xn before : ", xn);
       var I0 = C2.mul(T2).mul(T3)
