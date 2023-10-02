@@ -96,7 +96,6 @@ function simplify(n : Z, b? : number, e? : number, p? : number) {
     if (n == 0) return ZERO;
     if(!b) throw new InvalidParameterError(`Base 'b' should provided for all numbers other than, ZERO, Infinity, -Infinity, NaN. Passed 'b' = ${b}`)
     while( _mod(n, b) == 0) n = _div(n, b);
-    
     p = _log(_abs(n), b);
     
     return new Float(n, b, e, ++p);
@@ -229,7 +228,7 @@ function __additive(n1 : Z, b1 : number, e1 : number, p1 : number, n2 : Z, b2 : 
     f1 = p1 - e1, 
     f2 = p2 - e2
 
-  if(f1 > f2) { // num1.fraction > num2.fraction
+  if(f1 >= f2) { // num1.fraction > num2.fraction
     f = f1;
     n2 = _mul(n2, _pow(b2,  f1 - f2 )); 
   }
@@ -237,7 +236,6 @@ function __additive(n1 : Z, b1 : number, e1 : number, p1 : number, n2 : Z, b2 : 
     f = f2;
     n1 = _mul(n1, _pow(b1, f2 - f1));
   }
-  
   var num = fn(n1, n2), // add n1 and n2
   exp = Number(_log(_abs(num), b1)) - f + 1; // calculate the integer size of res {num}
 
@@ -330,7 +328,7 @@ export class Float extends N  implements FloatingTypeObject {
 
   constructor(n : Z, b : number = 10, e : number = 0, p : number) {
     super();
-    this.n = n < Number.MAX_SAFE_INTEGER ? Number(n) : BigInt(n);  // integer part
+    this.n = n < Number.MAX_SAFE_INTEGER && n > Number.MIN_SAFE_INTEGER ? Number(n) : BigInt(n);  // integer part
     this.b = b;  // number system
     this.e = e;  // number exponent
     this.p = p;  // precision 
@@ -338,7 +336,7 @@ export class Float extends N  implements FloatingTypeObject {
 
   /** Number / Object methods */
   toString()  {
-    throw new NotImplementedError
+    return `Float { n = ${this.n}, b = ${this.b}, e = ${this.e}, p = ${this.p}}`
   }
 
 

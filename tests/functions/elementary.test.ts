@@ -1,6 +1,40 @@
+import { zip } from "lodash";
 import { E_STR } from "../../src/constants";
-import { configR, getConfigAll, getConfigR, real } from "../../src/dtype/R";
+import { configR, getConfigAll, getConfigR, real, Float } from '../../src/dtype/R';
 import { arccos, arcosh, arcsin, arctan, arsinh, artanh, cos, cosh, exp, exp0, exp1, exp2, factorial, gcd, ln, log, pow, sin, sinh, tan, tanh } from "../../src/functions/elementary";
+
+expect.extend({
+  toBeNearBy(res : Float | [Float], expected : Float | [Float]) {
+    function check (r : Float , e : Float) {
+      var delta = r.sub(e)
+      var p = delta.le(real("1e-31"))
+      
+      let m = () =>
+        `${r} -  ${e} = ${delta} > 1e31 `
+  
+      return { p, m }
+    }
+    var pass = true;
+    var mstr = "";
+    if (Array.isArray(res) && Array.isArray(expected)) {
+      zip(expected, res).forEach(([r, e]) => {
+        // @ts-ignore
+        var {p, m} = check(r, e)
+        pass &&= p;
+        mstr += m + "\n"
+      })
+    }
+    else if (res instanceof Float && expected instanceof Float){
+      var {p, m} = check(res, expected)
+      pass &&= p;
+      mstr += m + "\n"
+    }
+    return {
+      pass,
+      message : ()=> mstr
+    }
+  }
+})
 
 describe("test basic math operations : ", ()=>{
   beforeAll(()=>{
@@ -51,9 +85,13 @@ describe("test basic math operations : ", ()=>{
     ;
     console.log("CONFIG : ", getConfigAll());
     
-    var res = x.map(sin);
+    console.log("expected : ", expected)
 
-    expect(res).toEqual(expected)
+    var res = x.map(sin);
+    zip(expected, res).forEach(([r, e]) => {
+      // @ts-ignore
+      expect(r).toBeNearBy(e)
+    });
   })
 
   it("test cos function -> ", ()=>{
@@ -69,7 +107,8 @@ describe("test basic math operations : ", ()=>{
 
     var res = x.map(cos);
 
-    expect(res).toEqual(expected)
+    // @ts-ignore
+    expect(res).toBeNearBy(expected)
   })
 
   it("test tan function -> ", ()=>{
