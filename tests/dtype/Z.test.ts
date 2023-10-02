@@ -65,10 +65,11 @@ describe("test integer (Z) functions : ", ()=>{
   })
 
   it("test _pow function -> ", ()=>{
-    var n = [0, 1, 2, 5, 12],
-      expected = [1n, 2n, 4n, 32n, 4096n]
+    var n = [0, 1, 2, 5, 12, 60],
+      expected = [1, 2, 4, 32, 4096, 1152921504606846976n]
       ;
     var res = n.map(n_=>_pow(2, n_));
+
     expect(res).toEqual(expected);
   })
 
@@ -128,10 +129,12 @@ describe("test integer (Z) functions : ", ()=>{
   it("test div functions -> ", ()=>{
     var a : Z[] = [1, 1112n, -113, -221214n],
       b : Z[] = [167, -12, 3n, -14n],
-      expected : Z[] = [0.005988023952095809, -92n, -37n, 15801n]
+      expected : Z[] = [0, -92n, -37n, 15801n]
       ;
     var res = Array.from(a, (_,i)=>_div(a[i], b[i]))
-      
+    
+    console.log("res : ", res);
+
     expect(res).toEqual(expected)
   })
 })

@@ -93,18 +93,18 @@ describe("test real (R) dtype : ", ()=>{
   })
 
   test("test sub method -> ", ()=>{
-    var a = ["100.212",0, 89.898, 78, 1].map(real),
-    b = ["0.3","121.90", "0", "899", -0.4].map(real)
+    var a = [11, "100.212",0, 89.898, 78, 1].map(real),
+    b = [3, "0.3","121.90", "0", "899", -0.4].map(real)
     ;
 
-    var expected = ["99.912","-121.9", 89.898, -821, 1.4].map(real);
+    var expected = [8, "99.912","-121.9", 89.898, -821, 1.4].map(real);
     var res = Array.from(a, (_,i)=>a[i].sub(b[i]))
 
     expect(res).toEqual(expected);
   })
 
   it("test mul method -> ", ()=>{
-    var a = [25, "-4654564.25", 111, "-121290", 22, 
+    var a = [25, "-4654564.25", 111, "-121290", 22,
               1000000, 123456].map(real),
     b =  [8, "25.0", 898.9898, "0.0009102", 22, 
               1000000, 123456].map(real),
@@ -119,13 +119,21 @@ describe("test real (R) dtype : ", ()=>{
   })
 
   it("test div method -> ", ()=>{
-    var a = [100, 129182981, 3.1415926, "1", 1, 1].map(real),
+    var a = [100, 129182981, 3.1415926, "1", 1, 1, 1].map(real),
     b =  [
-          4, 120192, 2, 1.4, 1.234567890, 1.42857142].map(real),
-    p = [32, 8, 4, 4, 9, 8],
-    expected = [25, 1074.8051, 1.571, 0.7142, 0.810000007, 0.7].map(real)
+          4, 120192, 2, 1.4, 1.234567890, 1.42857142, 10].map(real),
+    p = [32, 8, 4, 4, 9, 8], 
+    expected = [25, 1074.8051, 1.571, 0.7142, 0.810000007, 0.7, "0.1"].map(real)
     ;
     var res =  Array.from(a, (_,i)=>a[i].div(b[i], p[i]));
+
+    // var res = real("1").div(10)
+    // var expected = real("0.1")
+    // console.log("a ", a);
+    // console.log("b ", b);
+    // console.log("expected ", expected);
+    // console.log("res ", res);
+    
 
     expect(res).toEqual(expected);
   })
@@ -168,10 +176,6 @@ describe("test real (R) dtype : ", ()=>{
       expected =[0.25, 81, 1000000, 321489].map(real)
     ;
 
-    console.log("config : ", getConfigR("precision"))
-
-    // console.log("a : ", a);
-    // console.log("expected : ", expected);
     
     var res = Array.from(a, _=>_.square());
 

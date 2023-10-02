@@ -1,14 +1,14 @@
 import { InvalidNumberFormatError } from "../error";
 import { N } from "./N"
-import { decimal, R, Ri, BigDecimal } from "./R"
+import { real, R, Ri, Float } from "./R"
 
 export type Ci = Complex | Ri;
 
 export type C = Complex;
 
 export interface Cx {
-  a : BigDecimal, // real part
-  b : BigDecimal // complex part
+  a : Float, // real part
+  b : Float // complex part
 }
 
 export class Complex extends N implements Cx {
@@ -35,10 +35,10 @@ export class Complex extends N implements Cx {
   
   // In testing
   private static COMPLEX_STRING_MATCH_EXP = /^(?:(?<real>\d+(?:(?:\.\d+)?(?:e[+\-]\d+)?)?)?(?:[+\-]))?(?<imaginary>\d+(?:(?:\.\d+)?(?:e[+\-]\d+)?)?)?[iI]$/
-  a: BigDecimal
-  b: BigDecimal
+  a: Float
+  b: Float
 
-  constructor(a : BigDecimal, b : BigDecimal){
+  constructor(a : Float, b : Float){
     super();
     this.a = a;
     this.b = b;
@@ -48,7 +48,7 @@ export class Complex extends N implements Cx {
   
   one(){return ONE}
 
-  set({a, b} : {a : BigDecimal | undefined, b : BigDecimal | undefined}) {
+  set({a, b} : {a : Float | undefined, b : Float | undefined}) {
     if(a) this.a = a;
     else if (b) this.b = b;
   }
@@ -87,17 +87,17 @@ export class Complex extends N implements Cx {
         r_ = match1.groups.real2;
       }
 
-      return new Complex(decimal(r_), decimal(i_))
+      return new Complex(real(r_), real(i_))
     } 
-    else if (typeof a === "number" && !b) return new Complex(decimal(a), decimal(0));
+    else if (typeof a === "number" && !b) return new Complex(real(a), real(0));
     else if (a instanceof Complex) { // as complex number
       return a.clone();
     }
     else if (a && !b) {
-      return new Complex(decimal(a), decimal(0));
+      return new Complex(real(a), real(0));
     }
     else if (a && b) { // as real (a) and imaginary (b) part
-      return new Complex(decimal(a), decimal(b));
+      return new Complex(real(a), real(b));
     }
 
     throw new InvalidNumberFormatError(`Can't parse a = ${a}, b = ${b} as complex number, not satified any condition`)

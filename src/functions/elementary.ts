@@ -1,7 +1,7 @@
 import { LN2_STR, PI_2_STR, PI_STR } from "../constants";
 import { C, Ci, complex, Complex } from "../dtype/C";
-import { Real, real, Ri, R } from "../dtype/R";
-import { Z, _factorial, _gcd, _lcm, _pow, _powm } from "../dtype/Z";
+import { Float, real, Ri, R } from "../dtype/R";
+import { Z, _factorial, _gcd, _lcm, _pow, _powm, _log2 } from '../dtype/Z';
 import { NotImplementedError } from "../error";
 
 /**
@@ -97,7 +97,7 @@ export function pow(a : bigint | number, n : bigint | number, m : number | bigin
   if (typeof a === "number" || typeof a === "bigint" ) {
     if(m) return _powm(a, n, m);
     return _pow(a, n);
-  } else if(a instanceof Real) {
+  } else if(a instanceof Float) {
     return real(a).powz(n);
   } return complex(a).powz(n);
 }
@@ -106,7 +106,7 @@ export function pow(a : bigint | number, n : bigint | number, m : number | bigin
  * For small x uses exp1, for large x uses exp0
  * @param x 
  */
-export function exp(x : Ci, precision : Z = 100n) : Real {
+export function exp(x : Ci, precision : Z = 100n) : Float {
   if (x instanceof Complex) throw new NotImplementedError(`Not implemented for x = ${x} complex data type`)
   return exp0(x)
 }
@@ -125,7 +125,7 @@ export function exp0(x : Ci)  {
     x0 = real(1),  // initial term
     one = x0.one(),   // 1
     xn = x0,          // xn th term
-    iter_ = 1000
+    iter_ = 100
   ;
 
   for(var i_ = iter_; i_ > 0; i_--) {
@@ -182,10 +182,10 @@ export function log(n : Ri, b : Ri) {
   return real(ln(n)).div(ln(b));
 }
 
-export function ln(n : Ri) : Real{
+export function ln(n : Ri) : Float{
   // represent n as 2 ^ r * (1 + f)
   var n_ = real(n),
-    r = n_._log(2),
+    r = BigInt(n_.logz(2)),
     f = n_.div(2n ** r).sub(1) // n / 2 ^ r  - 1
   ;
 
@@ -255,8 +255,8 @@ export function cos(x : Ri) : R {
     return an;
 }
 
-export function tan(x : Ri) : R {
-  return sin(x).div(cos(x))
+export function tan(x : Ri) : Float {
+  return real(sin(x)).div(cos(x))
 }
 
 export function arcsin(x : Ri) : R {
@@ -317,7 +317,7 @@ export function sinh(x : Ri) : R  {
     e_2x_ = e_x_.square()
   ;
   
-  return e_2x_.minus(1).by(
+  return e_2x_.minus(1).div(
     e_x_.mul(2)
   )
 }
@@ -327,7 +327,7 @@ export function cosh(x : Ri) : R {
     e_2x_ = e_x_.square()
   ;
   
-  return e_2x_.plus(1).by(
+  return e_2x_.plus(1).div(
     e_x_.mul(2)
   )
 }
@@ -360,12 +360,12 @@ export function arcosh(x : Ri) : R{
 
 export function artanh(x : Ri) : R{
   var x_ = real(x),
-    xi = x_.plus(1).by(
+    xi = x_.plus(1).div(
               x_.minus(1).addinv()
             ) // ( x + 1 ) / (x - 1)
   ;
   
-  return ln(xi).by(2);
+  return ln(xi).div(2);
 }
 /**
  * Complex Functions

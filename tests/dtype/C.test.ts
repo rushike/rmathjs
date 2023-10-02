@@ -1,5 +1,5 @@
 import {complex} from "../../src/dtype/C"
-import { decimal } from "../../src/dtype/R";
+import { configR, real } from "../../src/dtype/R";
 
 describe("test complex (C) dtype : ", ()=>{
   it("test add method -> ", ()=>{
@@ -39,11 +39,14 @@ describe("test complex (C) dtype : ", ()=>{
       b = complex("2+3i"),
       expected = complex(
         `3.61538461538461538461538461538461`+
-        `+0.07692307692307692307692307692307i`
+        `+0.076923076923076923076923076923076i`
         )
         ;
-    var res = a.div(b)
+
+    configR({precision : 33})
     
+    var res = a.div(b)
+  
     expect(res).toEqual(expected);
   })
 
@@ -72,6 +75,10 @@ describe("test complex (C) dtype : ", ()=>{
       expected = complex("5656.5 - 89.89i")
     ;
     var res = a.conjugate();
+
+    console.log("expected : ", expected);
+
+    console.log("res : ", res);
     
     expect(res).toEqual(expected)
     
@@ -79,7 +86,7 @@ describe("test complex (C) dtype : ", ()=>{
 
   it("test real function -> ", ()=>{
     var a = complex(" - 78.788 + 78787i"),
-    expected = decimal("-78.788")
+    expected = real("-78.788")
     ;
 
     var res = a.real();
@@ -88,7 +95,7 @@ describe("test complex (C) dtype : ", ()=>{
 
   it("test complex function -> ", ()=>{
     var a = complex(" - 78.788 + 985 i"),
-    expected = decimal("985")
+    expected = real("985")
     ;
 
     var res = a.imaginary();

@@ -24,18 +24,18 @@ export type Fn3 = (a1 : Z, a2 : Z, a3 : Z) => Z;
  */
 export function opr( fn : Function, a : Z, b : Z = 1, c : Z = 1, d : Z = 1) : Z{
   if(typeof d === "number")
-    if (typeof c === "number") {
+    if (typeof c === "number") 
       if (typeof b === "number") 
         if (typeof a === "number") 
           return fn(a, b, c, d) // all are numbers
     d = BigInt(d)
-  }
+  
   if (typeof b === "number") 
     b = BigInt(b)
   if (typeof a === "number")
     a = BigInt(a)
   if (typeof c === "number")
-  c = BigInt(c)
+    c = BigInt(c)
   return fn(a, b, c, d); 
 }
 
@@ -146,7 +146,7 @@ export function _modz(a : Z, m : Z) : Z{
     } return a_;
   }
   //@ts-ignore
-  return opr(gcd_(a, b), a, b);
+  return opr(gcd_, a, b);
 }
 
 export function _lcm(a : Z, b : Z) : Z {
@@ -258,7 +258,6 @@ export const _log = (a : Z, b : Z = 10) : number => {
       lg += i_;
       i_ *= 2n;
     }
-    console.log("res : ", lg);
     
     return Number(lg);
 }
