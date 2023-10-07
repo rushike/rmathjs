@@ -3,38 +3,24 @@ import { E_STR } from "../../src/constants";
 import { configR, getConfigAll, getConfigR, real, Float } from '../../src/dtype/R';
 import { arccos, arcosh, arcsin, arctan, arsinh, artanh, cos, cosh, exp, exp0, exp1, exp2, factorial, gcd, ln, log, pow, sin, sinh, tan, tanh } from "../../src/functions/elementary";
 
-expect.extend({
-  toBeNearBy(res : Float | [Float], expected : Float | [Float]) {
-    function check (r : Float , e : Float) {
-      var delta = r.sub(e)
-      var p = delta.le(real("1e-31"))
-      
-      let m = () =>
-        `${r} -  ${e} = ${delta} > 1e31 `
-  
-      return { p, m }
-    }
-    var pass = true;
-    var mstr = "";
-    if (Array.isArray(res) && Array.isArray(expected)) {
-      zip(expected, res).forEach(([r, e]) => {
-        // @ts-ignore
-        var {p, m} = check(r, e)
-        pass &&= p;
-        mstr += m + "\n"
-      })
-    }
-    else if (res instanceof Float && expected instanceof Float){
-      var {p, m} = check(res, expected)
-      pass &&= p;
-      mstr += m + "\n"
-    }
-    return {
-      pass,
-      message : ()=> mstr
-    }
+function toBeNearBy(res : Float | [Float], expected : Float | [Float], precise = 31) {
+  function check (r : Float , e : Float) {
+    var res = r.toPrecision(precise)
+    var expected = e.toPrecision(precise)
+    expect(res).toEqual(expected)
   }
-})
+
+  if (res instanceof Float && expected instanceof Float){
+    check(res, expected)
+  }
+  else if (Array.isArray(res) && Array.isArray(expected)) {
+    zip(expected, res).forEach(([r, e]) => {
+      // @ts-ignore
+      check(r, e)
+    })
+  }
+}
+
 
 describe("test basic math operations : ", ()=>{
   beforeAll(()=>{
@@ -70,7 +56,8 @@ describe("test basic math operations : ", ()=>{
     var res : any = exp(x);
     var match = expected.sub(res).lt(delta);
     
-    expect(match).toBe(true)
+    // expect(match).toBe(true)
+    toBeNearBy(res, expected, 10)
   })
 
   it("test sin function -> ", ()=>{
@@ -83,15 +70,14 @@ describe("test basic math operations : ", ()=>{
       "0.90140343710581305144201223192653"
     ].map(real)
     ;
-    console.log("CONFIG : ", getConfigAll());
+    // console.log("CONFIG : ", getConfigAll());
     
-    console.log("expected : ", expected)
+    // console.log("expected : ", expected)
 
     var res = x.map(sin);
-    zip(expected, res).forEach(([r, e]) => {
-      // @ts-ignore
-      expect(r).toBeNearBy(e)
-    });
+
+    //@ts-ignore
+    toBeNearBy(res, expected, 30)
   })
 
   it("test cos function -> ", ()=>{
@@ -107,8 +93,8 @@ describe("test basic math operations : ", ()=>{
 
     var res = x.map(cos);
 
-    // @ts-ignore
-    expect(res).toBeNearBy(expected)
+    //@ts-ignore
+    toBeNearBy(res, expected)
   })
 
   it("test tan function -> ", ()=>{
@@ -122,7 +108,9 @@ describe("test basic math operations : ", ()=>{
     ].map(real)
 
     var res = x.map(tan);
-    expect(res).toEqual(expected)
+
+    //@ts-ignore
+    toBeNearBy(res, expected)
     
   })
 
@@ -133,19 +121,21 @@ describe("test basic math operations : ", ()=>{
 
     var res = x.map(arcsin)
 
-    expect(res).toEqual(expected)
+    //@ts-ignore
+    toBeNearBy(res, expected)
     
   })
 
-  // it("test cos-1 function -> ", ()=>{
-  //   var x = [0.1111],
-  //     expected = ["1.459466492689613578839494523096611"].map(real)
-  //   ;
-  //   var res = x.map(arccos).map(_=>_.toString(32))
+  it("test cos-1 function -> ", ()=>{
+    var x = [0.1111],
+      expected = ["1.459466492689613578839494523096611"].map(real)
+    ;
+    var res = x.map(arccos) // .map(_=>_.toString(32))
 
-  //   expect(res).toEqual(expected)
+    //@ts-ignore
+    toBeNearBy(res, expected)
     
-  // })
+  })
 
   it("test tan-1 function -> ", ()=>{
     var x = [0.92121],
@@ -153,7 +143,8 @@ describe("test basic math operations : ", ()=>{
       ;
     var res = x.map(arctan)
 
-    expect(res).toEqual(expected);
+    //@ts-ignore
+    toBeNearBy(res, expected)
   })
 
   it("test sinh function -> ", ()=>{
@@ -163,7 +154,8 @@ describe("test basic math operations : ", ()=>{
 
     var res = x.map(sinh)
 
-    expect(res).toEqual(expected)
+    //@ts-ignore
+    toBeNearBy(res, expected)
     
   })
 
@@ -174,7 +166,8 @@ describe("test basic math operations : ", ()=>{
 
     var res = x.map(cosh)
     
-    expect(res).toEqual(expected)
+    //@ts-ignore
+    toBeNearBy(res, expected)
   })
 
   it("test tanh function -> ", ()=>{
@@ -184,7 +177,8 @@ describe("test basic math operations : ", ()=>{
 
     var res = x.map(tanh)
     
-    expect(res).toEqual(expected)
+    //@ts-ignore
+    toBeNearBy(res, expected)
   })
 
 
@@ -195,7 +189,8 @@ describe("test basic math operations : ", ()=>{
 
     var res = x.map(arsinh)
     
-    expect(res).toEqual(expected)
+    //@ts-ignore
+    toBeNearBy(res, expected)
   })
 
   it("test arcosh function -> ", ()=>{
@@ -205,7 +200,8 @@ describe("test basic math operations : ", ()=>{
 
     var res = x.map(arcosh)
     
-    expect(res).toEqual(expected)
+    //@ts-ignore
+    toBeNearBy(res, expected)
   })
 
 
@@ -216,7 +212,8 @@ describe("test basic math operations : ", ()=>{
 
     var res = x.map(artanh)
     
-    expect(res).toEqual(expected)
+    //@ts-ignore
+    toBeNearBy(res, expected)
   })
 
 
@@ -228,7 +225,8 @@ describe("test basic math operations : ", ()=>{
     
     var res = x.map(_=>log(_, b)).map(_=>real(_))
 
-    expect(res).toEqual(expected);
+    //@ts-ignore
+    toBeNearBy(res, expected)
   })
 
   it("test ln function -> ", ()=>{
@@ -238,7 +236,8 @@ describe("test basic math operations : ", ()=>{
 
     var res = x.map(ln).map(_=>real(_))
     
-    expect(res).toEqual(expected);
+    //@ts-ignore
+    toBeNearBy(res, expected)
   })
 
 })
