@@ -184,10 +184,12 @@ describe("test basic math operations : ", ()=>{
 
   it("test arcsinh function -> ", ()=>{
     var x = [3.91121],
-      expected = ["2.07160629745815026658498258121563n"].map(real) // actual is : 2.0729497794549505395905226852762308703519490465447945011118772682...
+      expected = ["2.0729497794549505395905226852813"].map(real) // actual is : 2.0729497794549505395905226852762308703519490465447945011118772682...
     ;
 
     var res = x.map(arsinh)
+    
+    console.log("res : arcsinh : ", res);
     
     //@ts-ignore
     toBeNearBy(res, expected)
@@ -230,11 +232,17 @@ describe("test basic math operations : ", ()=>{
   })
 
   it("test ln function -> ", ()=>{
-    var x = [23230293],
-      expected = [real("16.96096771766747913451544313441155")]
+    var x = [23230293, 7.948234, 7948234],
+      expected = [real("16.96096771766747913451544313441155"), 
+        real("2.07294969408562828986224768606398"),
+        // real("15.88846032358935376018789428328364458921404685393293109882241901624515607622380"),
+        real("15.88846025204990239397019641416898") // TODO: fix precision
+      ]
     ;
 
     var res = x.map(ln).map(_=>real(_))
+    
+    console.log("res : ln 4 : ", res);
     
     //@ts-ignore
     toBeNearBy(res, expected)

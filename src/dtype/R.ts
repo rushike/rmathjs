@@ -496,13 +496,14 @@ export class Float extends N  implements FloatingTypeObject {
   addinv() : Float {return super.addinv()}
 
   floor() {
-    var d = _pow(this.b, this.e)
+    if (this.e - this.p < 0) return 0n;
+    var d = _pow(this.b, this.e - this.p)
     ;
-    return BigInt(this.n) / BigInt(d)
+    return BigInt(this.n) * BigInt(d)
   }
 
   ceil() {
-    return BigInt(this.n) / BigInt(_pow(this.b, this.e)) + 1n; 
+    return BigInt(this.n) * BigInt(_pow(this.b, this.e - this.p)) + 1n; 
   }
 
   /**
@@ -542,7 +543,10 @@ export class Float extends N  implements FloatingTypeObject {
 
   /**
    * Compute nth root of this decimal using Halley 2 derivative method.
-   *   //    * 
+   *   $$ x_{k+1} = 
+   *     x_{k} - \frac{1}{n}\left( x_{n} - \frac{a}{x^{n-1}}  \right)  
+   *    \left( 1 -  \frac{n - 1}{n} . \frac{1}{2x_{k}} . \left( x_{k} - \frac{a}{x^{n-1}}  \right) \right)
+   *   $$
    * - A = 1 - t/x^n     
    * - B = 1 - nratio * A
    * - C = A * x / n     
@@ -665,6 +669,7 @@ export class Float extends N  implements FloatingTypeObject {
       n_ = a_.floor(),
       b_ = b ? BigInt(b) : a_.b
     ;
+    
     return _log(n_, b_)
   }
 }
@@ -691,3 +696,6 @@ const ONE = new Float(1, 10, 1, 1);
 export const real = (a : Ri)=>{  
   return parseargs(a);
 }
+
+export const decimal = real;
+export const bigdecimal = real;

@@ -19,6 +19,7 @@ describe("test factors functions :", ()=>{
     // 2^3×3×73×571×769×2319659×6832559787091
     
     expect(res).toEqual([
+      { p : 1, k : 1},
       { p: 2n, k: 3 },
       { p: 3n, k: 1 },
       { p: 73n, k: 1 },

@@ -1,3 +1,6 @@
+/**
+ * @module functions
+ */
 import {
   gcd,
   lcm,

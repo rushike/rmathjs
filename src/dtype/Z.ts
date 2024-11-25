@@ -213,8 +213,7 @@ export function _log2(n : Z) {
   var n_ = BigInt(n),
     i_ = 1024n,
     lg = 0n,
-    temp
-    // iter = 1
+    temp    
     ;
     while(n_ > 1n) {
       temp = n_ >> i_;

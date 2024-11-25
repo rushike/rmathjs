@@ -1,7 +1,7 @@
 import { LN2_STR, PI_2_STR, PI_STR } from "../constants";
 import { C, Ci, complex, Complex } from "../dtype/C";
 import { Float, real, Ri, R } from "../dtype/R";
-import { Z, _factorial, _gcd, _lcm, _pow, _powm, _log2 } from '../dtype/Z';
+import { Z, _factorial, _gcd, _lcm, _pow, _powm, _log2, Zi } from '../dtype/Z';
 import { NotImplementedError } from "../error";
 
 /**
@@ -182,7 +182,38 @@ export function log(n : Ri, b : Ri) {
   return real(ln(n)).div(ln(b));
 }
 
-export function ln(n : Ri) : Float{
+/**
+ *
+ * N = 0.n * 10 ^ e  <br/>
+ *   = n * 10^ -p * 10 ^ e
+ * N = n * 10 ^ (e - p)
+ * 
+ * So,
+ * ln(N) = ln(n * 10 ^ (e-p)
+ *       = ln(n) + (e - p) * ln(10)
+ * TODO: ln: check if value is correctly calculated to precision
+ * @param n real number
+ * @returns ln(n)
+ */
+export function ln(n : Ri) : Float {
+  let n_ = real(n);
+  
+  if (n_.isInteger()) return lnz(n_.n)
+  else {
+    console.log("in else");
+
+    return lnz(n_.n).add(lnz(n_.b).mul(n_.e - n_.p))
+  }
+
+}
+
+/**
+ * This method compute logarithms for integer like
+ * TODO: lnz : this works, fix low precision
+ * @param n integer like
+ * @returns ln(n)
+ */
+export function lnz(n : Zi) : Float{
   // represent n as 2 ^ r * (1 + f)
   var n_ = real(n),
     r = BigInt(n_.logz(2)),
@@ -340,6 +371,12 @@ export function tanh(x : Ri) : R {
 }
 
 
+/**
+ * $$ arsinh(x) = ln(x + \sqrt{x^2 + 1}) $$
+ * TODO: arsinh check if value is correctly calculated to precision
+ * @param x Float
+ * @returns 
+ */
 export function arsinh(x : Ri) : R{
   var x_ = real(x),
     xi = x_.plus(

@@ -1,3 +1,7 @@
+/**
+ * @module rmathjs
+ */
+
 import {
   bignum,
   fraction,
@@ -12,6 +16,7 @@ import {
   powz,
   pow,
   exp,
+  arsinh
 } from "./functions/elementary"
 
 export default {
@@ -26,5 +31,6 @@ export default {
   factorial,
   powz,
   pow,
-  exp
+  exp,
+  arsinh
 }
