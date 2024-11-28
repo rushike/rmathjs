@@ -1,5 +1,4 @@
-import { Z } from "../../lib/dtype/Z";
-import { _factorial, _log, _oddprod, _pow, _serialfactorial, _rightshift, 
+import { Z, _factorial, _log, _oddprod, _pow, _serialfactorial, _rightshift, 
   _leftshift, _powm, opr, _plus, _minus, _mul, _div} from "../../src/dtype/Z"
 
 describe("test integer (Z) functions : ", ()=>{

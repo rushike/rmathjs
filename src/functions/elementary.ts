@@ -103,6 +103,27 @@ export function pow(a : bigint | number, n : bigint | number, m : number | bigin
 }
 
 /**
+ * TODO: Complete funciton implementation via Bakhshali method
+ * https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Bakhshali_method
+ * @param x 
+ * @param precision 
+ * @returns 
+ */
+export function nroot(x : Ci, precision : number) : Float {
+  if (x instanceof Complex) throw new NotImplementedError(`Not implemented for x = ${x} complex data type`)
+  let _x = real(x);
+
+  let 
+    _x0 = _x.le(Number.MAX_VALUE) ? Math.sqrt(_x.toNumber()) 
+    : (_x.n < Number.MAX_VALUE ? Number(_x.b ** ((_x.e - _x.p) / 2)) *  Number(_x.n) 
+    : (2));
+
+  let x0 = real(1);
+
+  return _x;
+}
+
+/**
  * For small x uses exp1, for large x uses exp0
  * @param x 
  */
@@ -112,9 +133,9 @@ export function exp(x : Ci, precision : Z = 100n) : Float {
 }
 
 /**
-// computing e ^ 1 took 1869 ms over 1000 iteration
-// Uses :
-//   e ^ x = 1 + x (1 + x/2(1 + x/3 (1+x/4(1 + x/5(...)))))
+ * computing e ^ 1 took 1869 ms over 1000 iteration
+ * Uses :
+ *   $$ e ^ x = 1 + x (1 + x/2(1 + x/3 (1+x/4(1 + x/5(...))))) $$
  * 
  * @param x complex
  * @returns e ^ x
@@ -200,8 +221,6 @@ export function ln(n : Ri) : Float {
   
   if (n_.isInteger()) return lnz(n_.n)
   else {
-    console.log("in else");
-
     return lnz(n_.n).add(lnz(n_.b).mul(n_.e - n_.p))
   }
 
@@ -221,12 +240,12 @@ export function lnz(n : Zi) : Float{
   ;
 
   var
-    iter_ = 100n, 
+    iter_ = 1000n, 
     an = real(iter_).mulinv(), // 1 / i_n
     f_ = f,
     ln2r = real(LN2_STR).mul(r)
     ;
-
+  /** $$ a_{n+1} = 1 / i -  f * a_n $$ */
   for(var i_ = iter_ - 1n; i_ > 0n; i_--) { // can reduce term by slight modification
     an = real(i_).mulinv().sub(f_.mul(an));
   }

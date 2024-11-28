@@ -1,4 +1,4 @@
-import { InvalidNumberFormatError, InvalidParameterError, NotImplementedError } from "../error";
+import { InvalidNumberFormatError, InvalidParameterError, NotImplementedError, NumberCastError } from "../error";
 import { Try } from "../utils";
 import { N, ConfigType as ConfigTypeN, config as configN } from "./N";
 import { bignum, Z, _abs, _add, _div, _isinteger, _log, _max, _min, _mod, _mul, _mul3, _pow, _powz, _sub} from "./Z";
@@ -12,7 +12,7 @@ export type R = Float | bigint | number;
 export type ConfigType = ConfigTypeN & {}
 
 const CONFIG : ConfigType = {
-  precision : 20, // in mode of base. So by default 32 digits.
+  precision : 30, // in mode of base. ~ 100 bits.
   base : 10,
 }
 
@@ -259,8 +259,6 @@ function __mul(n1 : Z, b1 : number, e1 : number, p1 : number, n2 : Z, b2 : numbe
     f = f1 + f2
     ;
   
-  // var num = _mul(n1, n2) // mul n1 and n2
-  // console.log("coeff : s", n1, b1, e1, f1,p1, n2,b2,e2,f2,p2, f, ", num , exp : ", num);
   return simplifyfrac(_mul(n1, n2), b1, f, precision);
 }
 
@@ -362,13 +360,6 @@ export class Float extends N  implements FloatingTypeObject {
 
   one() {return ONE}
 
-  // set({n, b, e, p}: {n : Z | null, b : Z | null, e : Z | null, p : Z | null}) {
-  //   if(n) this.n = BigInt(n);
-  //   else if(b) this.b = BigInt(b);
-  //   else if(e) this.e = BigInt(e);
-  //   else if(p) this.p = BigInt(p);
-  // }
-
   get() {
     return [this.n, this.b, this.e, this.p];
   }
@@ -381,9 +372,15 @@ export class Float extends N  implements FloatingTypeObject {
     return this;
   }
 
-  // toint() {
-  //   return this.floor();
-  // }
+  /**
+   * TODO: this will break for high precision, where bigint stored is > Max Number.
+   * @returns aprox number representing Float
+   */
+  toNumber() : number {
+    if (this.ge(Number.MAX_VALUE) && this.le(Number.MIN_VALUE)) 
+      throw new NumberCastError(`Can't cast this : ${this} to Number. Probably this < ${Number.MIN_VALUE} or this > ${Number.MAX_VALUE}`);
+    return Number(this.n) * Number(this.b) ** (this.e - this.p)
+  }
 
 
   lt(b : Ri) {
@@ -571,35 +568,23 @@ export class Float extends N  implements FloatingTypeObject {
       ;
     var T1, T2, T3;
 
-    // console.log("C0, C1, C2 : ", C0, C1, C2);
-    
-
     for(var i = 0; i < iter; i++) {
-      // console.log("xn before before  : ", xn);
 
       T1 = xn.powz(n - 1); // xn ^ (n - 1)
-      var I01 = xn.mul(2);
-      // console.log("I01 : ", I01, );
+      var I01 = xn.mul(2, precision);
 
-      T2 = C0.div(xn.mul(2)); // 1 / (2 * xn)
+      T2 = C0.div(xn.mul(2, precision), precision); // 1 / (2 * xn)
 
-      T3 = xn.minus(this.div(T1)); // xn - k / T1
+      T3 = xn.minus(this.div(T1, precision)); // xn - k / T1
 
-
-      // console.log("xn before : ", xn);
-      var I0 = C2.mul(T2).mul(T3)
+      var I0 = C2.mul(T2, precision).mul(T3, precision)
       var I001 = C0.minus(I0)
       var I1 = C0.div(
-        I001
+        I001, precision
         )
-      var I2 = T3.mul(C1).mul(
+      var I2 = T3.mul(C1, precision).mul(
         I1
       )
-
-      // console.log("I0 : ", I0);
-      // console.log("I001 : ", I001);
-      // console.log("I1 : ", I1);
-      // console.log("I2 : ", I2);
       
       xn = xn.minus(
         T3.mul(C1, precision).mul(
@@ -612,13 +597,7 @@ export class Float extends N  implements FloatingTypeObject {
           precision
         )
       )
-
-      // console.log("xn : ", xn, ONE.minus(xn));
-      
     }
-    // console.log("xn : ", xn);
-
-
     return xn;
       // 
   }

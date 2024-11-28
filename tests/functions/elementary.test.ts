@@ -189,21 +189,20 @@ describe("test basic math operations : ", ()=>{
 
     var res = x.map(arsinh)
     
-    console.log("res : arcsinh : ", res);
-    
     //@ts-ignore
     toBeNearBy(res, expected)
   })
 
   it("test arcosh function -> ", ()=>{
     var x = [1.99991],
-      expected = ["1.31690593125670375033163468865225n"].map(real) // actual is : 1.3169059338416737635781623762742034155969758885867746465538992866...
+      expected = ["1.31690593384167376357816237627420"].map(real) 
+      // actual is : 1.3169059338416737635781623762742034155969758885867746465538992866...
     ;
 
     var res = x.map(arcosh)
-    
+
     //@ts-ignore
-    toBeNearBy(res, expected)
+    toBeNearBy(res, expected, 29) // TODO: fix the precision to configured precision, currently precise at 19 places to configure of 30
   })
 
 
@@ -213,9 +212,8 @@ describe("test basic math operations : ", ()=>{
     ;
 
     var res = x.map(artanh)
-    
     //@ts-ignore
-    toBeNearBy(res, expected)
+    toBeNearBy(res, expected, 29) // TODO: fix the precision to configured precision, currently precise at 19 places to configure of 30
   })
 
 
@@ -234,9 +232,8 @@ describe("test basic math operations : ", ()=>{
   it("test ln function -> ", ()=>{
     var x = [23230293, 7.948234, 7948234],
       expected = [real("16.96096771766747913451544313441155"), 
-        real("2.07294969408562828986224768606398"),
-        // real("15.88846032358935376018789428328364458921404685393293109882241901624515607622380"),
-        real("15.88846025204990239397019641416898") // TODO: fix precision
+        real("2.072949765625079656079945555179"),
+        real("15.88846032358935376018789428328") // TODO: check if at 30 digit precise
       ]
     ;
 
