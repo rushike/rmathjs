@@ -1,5 +1,5 @@
-import { NotImplementedError } from "../error";
-import { Z } from "./Z";
+import { NotImplementedError } from "../error.ts";
+import { Z } from "./Z.ts";
 
 export type ConfigType = {
   precision : number,
@@ -13,7 +13,7 @@ const CONFIG : ConfigType = {
 
 export function config(c = {}) {
   Object.entries(c).forEach(([key, val]) =>{ 
-    // @ts-ignore
+    // @ts-ignore: overide config to passed attribute
     if (key in CONFIG) CONFIG[key] = val;
   })
 }

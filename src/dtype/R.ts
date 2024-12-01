@@ -333,7 +333,7 @@ export class Float extends N  implements FloatingTypeObject {
   }
 
   /** Number / Object methods */
-  toString()  {
+  override toString()  {
     return `Float { n = ${this.n}, b = ${this.b}, e = ${this.e}, p = ${this.p}}`
   }
 
@@ -356,9 +356,9 @@ export class Float extends N  implements FloatingTypeObject {
     throw new NotImplementedError
   }
 
-  zero() {return ZERO}
+  override zero() {return ZERO}
 
-  one() {return ONE}
+  override one() {return ONE}
 
   get() {
     return [this.n, this.b, this.e, this.p];
@@ -368,7 +368,7 @@ export class Float extends N  implements FloatingTypeObject {
     return parseargs(n);
   }
 
-  clone() : Float {
+  override clone() : Float {
     return this;
   }
 
@@ -424,7 +424,7 @@ export class Float extends N  implements FloatingTypeObject {
 
   plus(b : Ri) {return this.add(b)}
 
-  add(b_ : Ri) {
+  override add(b_ : Ri) {
     var b = parseargs(b_); // parsing other operand
 
     if (this.eq(ZERO)) return b; // since 0 + b = b
@@ -441,7 +441,7 @@ export class Float extends N  implements FloatingTypeObject {
 
   minus(b : Ri) {return this.sub(b)}
 
-  sub(b : Ri) {
+  override sub(b : Ri) {
 
     b = parseargs(b);
     return __additive(
@@ -451,7 +451,7 @@ export class Float extends N  implements FloatingTypeObject {
     )
   }
 
-  mul(b_ : Ri, precision = CONFIG.precision) {
+  override mul(b_ : Ri, precision = CONFIG.precision) {
     if (this.n === 0 ) return ZERO // 0 * b = 0
 
     if (this.n === 1 && this.e === this.p) return real(b_); // since 1 * b = b
@@ -470,7 +470,7 @@ export class Float extends N  implements FloatingTypeObject {
   }
   // by(b : Ri) {return this.div(b)}
 
-  div(b_ : Ri, precision = CONFIG.precision) {
+  override div(b_ : Ri, precision = CONFIG.precision) {
     var b = parseargs(b_);
     return __div(
       this.n, this.b, this.e, this.p,
@@ -488,9 +488,9 @@ export class Float extends N  implements FloatingTypeObject {
       )
   }
 
-  mulinv() : Float {return super.mulinv()}
+  override mulinv() : Float {return super.mulinv()}
 
-  addinv() : Float {return super.addinv()}
+  override addinv() : Float {return super.addinv()}
 
   floor() {
     if (this.e - this.p < 0) return 0n;
@@ -520,13 +520,13 @@ export class Float extends N  implements FloatingTypeObject {
   //   return new Real(this.n / d_ + rbit, this.b, p_);
   // }
 
-  powz(n: Z) : Float {return super.powz(n)}
+  override powz(n: Z) : Float {return super.powz(n)}
 
   pow(x : Ri){
     throw new NotImplementedError(`decimal raised to non integer pow not implemented`)
   }
 
-  square() : Float {
+  override square() : Float {
     return __mul(
       this.n, this.b, this.e, this.p,
       this.n, this.b, this.e, this.p

@@ -1,7 +1,7 @@
-import { InvalidNumberFormatError } from "../error";
-import { gcd, lcm } from "../functions/elementary";
-import { N } from "./N";
-import { Zi } from "./Z";
+import { InvalidNumberFormatError } from "../error.ts";
+import { gcd, lcm } from "../functions/elementary.ts";
+import { N } from "./N.ts";
+import { Zi } from "./Z.ts";
 
 export type Qi = Zi | Rational;
 export type Q = Rational;
@@ -32,16 +32,16 @@ export class Rational extends N implements Fraction{
     return [n_ / gcd_, d_ / gcd_];
   }
 
-  set ({n, d} : {n : Zi | undefined, d : Zi | undefined}) {
+  override set ({n, d} : {n : Zi | undefined, d : Zi | undefined}) {
     if(n) this.n = BigInt(n);
     else if (d) this.d = BigInt(d);
   }
 
-  clone() {
+  override clone() {
     return new Rational(this.n, this.d)
   }
 
-  toString() {
+  override toString() {
     return `${this.n}/${this.d}`;
   }
 
@@ -60,7 +60,7 @@ export class Rational extends N implements Fraction{
     throw new InvalidNumberFormatError(`Can't parse a = ${a}, b = ${b} not statisfied any input condition`);
   }
 
-  add(b : Qi) {
+  override add(b : Qi) {
     var a_ = this.clone(),
     b_ = Rational.parse(b),
     d_ = BigInt(lcm(a_.d, b_.d)),
@@ -69,7 +69,7 @@ export class Rational extends N implements Fraction{
     return new Rational(n_, d_);
   }
 
-  sub(b : Qi) {
+  override sub(b : Qi) {
     var a_ = this.clone(),
     b_ = Rational.parse(b),
     d_ = BigInt(lcm(a_.d, b_.d)),
@@ -78,7 +78,7 @@ export class Rational extends N implements Fraction{
     return new Rational(n_, d_);
   }
 
-  mul(b : Qi) {
+  override mul(b : Qi) {
     var a_ = this.clone(),
     b_ = Rational.parse(b),
     d_ = a_.d * b_.d,
@@ -87,7 +87,7 @@ export class Rational extends N implements Fraction{
     return new Rational(n_, d_);
   }
 
-  div(b : Qi) {
+  override div(b : Qi) {
     var a_ = this.clone(),
     b_ = Rational.parse(b),
     d_ = a_.d * b_.n,

@@ -109,18 +109,17 @@ export function pow(a : bigint | number, n : bigint | number, m : number | bigin
  * @param precision 
  * @returns 
  */
-export function nroot(x : Ci, precision : number) : Float {
+export function nroot(x : Ci) : Float {
   if (x instanceof Complex) throw new NotImplementedError(`Not implemented for x = ${x} complex data type`)
-  let _x = real(x);
+  return real(x).nroot(2)
+  // let 
+  //   _x0 = _x.le(Number.MAX_VALUE) ? Math.sqrt(_x.toNumber()) 
+  //   : (_x.n < Number.MAX_VALUE ? Number(_x.b ** ((_x.e - _x.p) / 2)) *  Number(_x.n) 
+  //   : (2));
 
-  let 
-    _x0 = _x.le(Number.MAX_VALUE) ? Math.sqrt(_x.toNumber()) 
-    : (_x.n < Number.MAX_VALUE ? Number(_x.b ** ((_x.e - _x.p) / 2)) *  Number(_x.n) 
-    : (2));
+  // let x0 = real(1);
 
-  let x0 = real(1);
-
-  return _x;
+  // return _x;
 }
 
 /**

@@ -44,20 +44,20 @@ export class Complex extends N implements Cx {
     this.b = b;
   }
 
-  zero(){return ZERO}
+  override zero(){return ZERO}
   
-  one(){return ONE}
+  override one(){return ONE}
 
-  set({a, b} : {a : Float | undefined, b : Float | undefined}) {
+  override set({a, b} : {a : Float | undefined, b : Float | undefined}) {
     if(a) this.a = a;
     else if (b) this.b = b;
   }
 
-  clone() {
+  override clone() {
     return new Complex(this.a, this.b);
   }
 
-  toString() {
+  override toString() {
     return `${this.a.toString()}+${this.b.toString()}i`
   }
 
@@ -103,7 +103,7 @@ export class Complex extends N implements Cx {
     throw new InvalidNumberFormatError(`Can't parse a = ${a}, b = ${b} as complex number, not satified any condition`)
   }
 
-  add(b: Ci) {
+  override add(b: Ci) {
     var a_ = this.clone(),
     b_ = Complex.parse(b)
     ;
@@ -111,14 +111,14 @@ export class Complex extends N implements Cx {
     return new Complex(a_.a.add(b_.a), a_.b.add(b_.b))
   }
 
-  sub(b: Ci) {
+  override sub(b: Ci) {
     var a_ = this.clone(),
     b_ = Complex.parse(b)
     ;
     return new Complex(a_.a.sub(b_.a), a_.b.sub(b_.b))
   }
 
-  mul(b: Ci) {
+  override mul(b: Ci) {
     var a_ = this.clone(), // a1 + ib1
     b_ = Complex.parse(b), // a2 + ib2
     r_ = a_.a.mul(b_.a).sub(a_.b.mul(b_.b)), // a1 * a2 - b1 * b2
@@ -128,7 +128,7 @@ export class Complex extends N implements Cx {
     return new Complex(r_, i_);
   }
 
-  div(b: Ci) {
+  override div(b: Ci) {
     var a_ = this.clone(), // a1 + ib1
     b_ = Complex.parse(b), // a2 + ib2
     c_ = b_.conjugate(), // a2 - ib2
@@ -143,7 +143,7 @@ export class Complex extends N implements Cx {
   }
 
 
-  square() {
+  override square() {
     return this.mul(this);
   }
 

@@ -1,4 +1,4 @@
-export {bignum} from "./Z";
-export {fraction} from "./Q";
-export {real, bigdecimal, decimal} from "./R"
-export {complex} from "./C";
+export {bignum} from "./Z.ts";
+export {fraction} from "./Q.ts";
+export {real, bigdecimal, decimal} from "./R.ts"
+export {complex} from "./C.ts";
