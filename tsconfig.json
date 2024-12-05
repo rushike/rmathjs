@@ -11,6 +11,9 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames" :true,
     "sourceMap": true,
+    "experimentalDecorators": true,
+    "allowImportingTsExtensions" : true,
+    "noEmit": true
   },
   "include": ["src/**/*.js", "src/**/*.ts", "src/**/*.d.ts", "performance.js"],
   "exclude":[

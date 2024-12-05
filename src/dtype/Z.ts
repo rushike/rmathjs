@@ -1,11 +1,131 @@
 import { min } from "lodash";
 import { POW_10 } from "../constants";
 import { NotImplementedError } from "../error";
-import { factorial } from "../functions/elementary";
+import { factorial, pow$1 } from "../functions/elementary";
 
 export type Zi = number | bigint | string;
 
 export type Z = number | bigint;
+
+export type Fn3 = (a1 : Z, a2 : Z, a3 : Z) => Z;
+
+/**
+ * opr cast any input args of type number to bigint,
+ * and call and return result of function {fn}
+ * 
+ * ? If all are number it will call {fn} with all number args
+ * 
+ * @TODO -> handle overflow in case all args are of type 'number' for all arithmetic operations
+ * @param fn 
+ * @param a 
+ * @param b 
+ * @param c 
+ * @returns Z
+ */
+export function opr( fn : Function, a : Z, b : Z = 1, c : Z = 1, d : Z = 1) : Z{
+  if(typeof d === "number")
+    if (typeof c === "number") 
+      if (typeof b === "number") 
+        if (typeof a === "number") 
+          return fn(a, b, c, d) // all are numbers
+    d = BigInt(d)
+  
+  if (typeof b === "number") 
+    b = BigInt(b)
+  if (typeof a === "number")
+    a = BigInt(a)
+  if (typeof c === "number")
+    c = BigInt(c)
+  return fn(a, b, c, d); 
+}
+
+function _int(n : Z, q : bigint) {
+  return BigInt(n) * q;
+}
+
+export function _isinteger(a : Z) {
+  return typeof a ==='bigint' || Number.isInteger(a);
+}
+
+export function eq (a : Z, b : Z) {
+  return a == b;
+}
+
+export function _leftshift(n : Z, k : Z, b : Z= 10) {
+  //@ts-ignore
+  return opr((a1, a2, a3)=>a1 * a3 ** a2, n, k, b);
+}
+
+export function _rightshift(n : Z, k : Z, b : Z = 10n) {
+  //@ts-ignore
+  return opr((a1, a2, a3)=>a1 / a3 ** a2, n, k, b);
+}
+
+export function _abs(n : Z) {
+  return n < 0 ? -n : n;
+}
+
+export function _add(a : Z, b : Z) {
+  //@ts-ignore
+  return opr((a1, a2)=>a1 + a2, a, b);
+}
+
+export const _plus = _add;
+
+export function _sub(a : Z, b : Z) {
+  //@ts-ignore
+  return opr((a1, a2)=>a1 - a2, a, b);
+}
+
+export const _minus = _sub;
+
+export function _mul(a : Z, b : Z) : Z {
+  if (typeof a === 'number' && typeof b === 'number') {
+    var res = a * b;
+    if (res < Number.MAX_SAFE_INTEGER && res > Number.MIN_SAFE_INTEGER) return res;
+    return BigInt(a) * BigInt(b);
+  }
+  //@ts-ignore
+  return opr((a1, a2)=> a1 * a2, a, b, 1n);
+}
+
+export const _times = _mul;
+
+export function _mul3(a : Z, b : Z, c : Z) : bigint {
+  //@ts-ignore
+  return opr((a1, a2, a3)=> a1 * a2 * a3, a, b, c, 1n);
+}
+
+export const _multipliedby = _mul;
+
+
+function _mulq(a : bigint, b : bigint, q : bigint) {
+  return a * b / q;
+}
+
+export function _div(a : Z, b : Z) {  
+  if(typeof a === 'number' && typeof b === 'number') return Math.floor(a / b);
+  //@ts-ignore
+  return opr((a1, a2)=>a1 / a2, a, b);
+}
+
+export const _dividedby = _div;
+
+function _divq(a : bigint, b : bigint, q : bigint) {
+  return a * q / b;
+}
+
+export function _mod(a : Z, m : Z) : Z{
+  if ((a < 0 && m < a) || (a > 0 && m > a)) return a; // trival case
+  if (a < Number.MAX_SAFE_INTEGER) return Number(a) % Number(m);
+  return BigInt(a) % BigInt(m);
+}
+
+export function _modz(a : Z, m : Z) : Z{
+  if ((a < 0 && m < a) || (a > 0 && m > a)) return a; // trival case
+  if (a < Number.MAX_SAFE_INTEGER) return Math.floor(Number(a)) % Math.floor(Number(m));
+  return BigInt(a) % BigInt(m);
+}
 
 
 /**
@@ -14,21 +134,24 @@ export type Z = number | bigint;
  * @param b 
  * @returns 
  */
- export function _gcd(a : Z, b : Z) {
-  var a_ = BigInt(a),
-  b_ = BigInt(b),
-  r_;
+ export function _gcd(a : Z, b : Z) : Z{
+  //@ts-ignore
+  function gcd_(a_, b_) : Z{
+    var r_;
 
-  while(b_) {
-    r_ = a_ % b_;
-    a_ = b_;
-    b_ = r_;
-  } return a_;
+    while(b_) {
+      r_ = a_ % b_;
+      a_ = b_;
+      b_ = r_;
+    } return a_;
+  }
+  //@ts-ignore
+  return opr(gcd_, a, b);
 }
 
-export function _lcm(a : Z, b : Z) {
-  var a_ = BigInt(a), b_ = BigInt(b);
-  return (a_ * b_) / _gcd(a_, b_);
+export function _lcm(a : Z, b : Z) : Z {
+  //@ts-ignore
+  return opr((a1, a2)=> (a1 * a2) / _gcd(a1, a2), a, b);
 }
 
 
@@ -61,6 +184,15 @@ export const _serialfactorial= (n : Z) => {
   return res;
 }
 
+/**
+ * Compute n! of integer number.
+ * Uses formula : 
+ *  (2n)! = 2 ^ n * n! * (odd_product till n)
+ * 
+ * & not using opr since
+ * @param n 
+ * @returns n!
+ */
 export const _factorial = (n : Z) => {
   var n_ = BigInt(n);
   
@@ -69,76 +201,116 @@ export const _factorial = (n : Z) => {
     if (x < 103n) return _serialfactorial(x);
     var half = x / 2n;
     
-    return fact(half) * _pow(2, half) * _oddprod(1n, x);
+    return fact(half) * BigInt(_pow(2, half)) * _oddprod(1n, x);
   }
   return fact(n_);
 }
 
-export const _log = (a : Z, b : Z = 10) => {
-  var n_ = BigInt(a),
-    b_ = BigInt(b),
-    d_ = BigInt(b),
-    i_ = 1n,
+
+export function _log2(n : Z) {
+  var mathlog = Math.floor(Math.log2(Number(n)));
+  if (Number.isFinite(mathlog)) return mathlog; 
+  var n_ = BigInt(n),
+    i_ = 1024n,
     lg = 0n,
-    temp,
-    iter = 0
+    temp    
     ;
     while(n_ > 1n) {
-      n_ /= d_;
-      lg += i_;
-      d_ *= b_;
-      i_++;
-      iter++;
-      temp = n_ / d_;
-      if (n_ < b_) break;
-      
-      while(temp == 0n && i_ > 0n) { // fallback
-        d_ /= b_;
-        i_--;
-        temp = n_ / d_;
-        iter++;
+      temp = n_ >> i_;
+      if(temp == 0n) {
+        i_ >>= 1n;
+        continue;
       }
-    } return lg;
+      n_ = temp;
+      lg += i_;
+      i_ <<= 1n;
+    }
+    return lg;
 }
 
-export const _powm = (a : bigint | number, n : bigint | number, m : number | bigint ) : bigint => {
-  if (
-    typeof n === 'number' 
-    && typeof a === 'number'
-    && typeof m === "number"
-    && n * Math.log2(a) < 32 * Math.log2(2)) BigInt(Math.pow(a, n) % m);
+export const _log = (a : Z, b : Z = 10) : number => {
+  b = Number(b);
+  
+  if(b == 2) return Number(_log2(a));
+  var mathlog = Math.floor(Math.log(Number(a)) / Math.log(b));
+  if (Number.isFinite(mathlog)) return mathlog; 
+
+  var a_ = BigInt(a),
+    b_ = BigInt(b),
+    i_ = 1024n,
+    lg = 0n,
+    temp
+    // iter = 1
+    ;
+    
+    while(a_ > 1n) {
+      if (a_ < Number.MAX_VALUE) return Number(lg + BigInt(Math.floor(Math.log(Number(a_)) / Math.log(b))));
+      // console.log("a_ : ", a_, "b : ", b, ", b  ^ i : ", b_ ** i_);
+      
+      temp = a_ / ( b_ ** i_);
+
+      if(temp == 0n) {
+        i_ /= 2n;
+        continue;
+      }
+      a_ = temp;
+      lg += i_;
+      i_ *= 2n;
+    }
+    
+    return Number(lg);
+}
+
+function powq(a : bigint, n : bigint, q : bigint) {
+  var res = _int(1, q);
+
+  while(n > 0) {
+    if (n & 1n) res = (res * a) / q;
+    a = (a * a) / q;
+    n >>= 1n; // n = n >> 1n
+  } return res;
+}
+
+export const _powm = (a : Z, n : Z, m : Z ) : Z => {
+  // @ts-ignore
+  function _powm_(a_, n_, m_, o_){
+    
+    if(o_ > 1) throw Error("Can't perform powm operation with odd bit > 1")
+    var res = 1n;
+
+    while(n_ > 0) {
+      if (n_ & o_) res = (res * a_) % m_;
+      a_ = (a_ * a_) % m_;
+      n_ >>= o_; // n = n >> 1n
+    }   
+    return res;
+  
+  }
+
+  var nbits = _mul(_log2(a), n);
+  // @ts-ignore
+  if (nbits < 53) return Number(a) ** Number(n) % Number(m)
+  
+  // @ts-ignore
+  if( nbits < 2000) return opr((a_, n_, m_)=>a_ ** n_ % m_, a, n,  m, 1n);
+  return opr(_powm_, a, n, m, 1n)
+}
+
+export const _powz = (a : Z, n : Z) => {
+  var nbits = _mul(_log2(a), n);
+  // @ts-ignore
+  if (nbits < 53) return Math.floor(Number(a)) ** Math.floor(Number(n))
+  return BigInt(a) ** BigInt(n);
+}
+
+export const _pow = (a : bigint | number, n : bigint | number)  => {
+  var nbits = _mul(_log2(a), n);
+  // @ts-ignore
+  if (nbits < 53) return Math.floor(Number(a)) ** Math.floor(Number(n))
   
   var a_ = BigInt(a),
-  n_ = BigInt(n),
-  m_ = BigInt(m),
-  acc = 1n;
-
-  while(n_ > 1) {
-    if (n_ & 0x1n) acc = (acc * a_) % m_;
-    a_ = (a_ * a_) % m_;
-    n_ = n_ >> 1n;
-  }   
-  return ( a_ * acc ) % m_;
-}
-
-export const _pow = (a : bigint | number, n : bigint | number) : bigint => {
-  if (
-    typeof n == 'number' 
-    && typeof a == 'number'
-    && n * Math.log2(a) < 32 * Math.log2(2)) BigInt(Math.pow(a, n));
-
-  var a_ = BigInt(a),
-  n_ = BigInt(n),
-  acc = 1n;
-
-  if(n == 0) return 1n;
-
-  while(n_ > 1) {
-    if (n_ & 0x1n) acc *= a_;
-    a_ *= a_;
-    n_ = n_ >> 1n;
-  }   
-  return a_ * acc;
+  n_ = BigInt(n);
+  return a_ ** n_;
 }
 
 export const _min = (...rest : Z[]) => {
@@ -155,17 +327,15 @@ export const _max = (...rest : Z[]) => {
   }); return BigInt(max_);
 }
 
-export function shiftleft(n : number | bigint,x : number | bigint, b = 10) {
-  return BigInt(n) * _pow(b, x);
-}
-
 /**
  * For non int n it returns [n]
  * @param n number | bigint | string
  * @returns [n] bigint
  */
 export const bignum =  (n : Zi) => {
-  if(typeof n === 'number') return BigInt(Math.floor(n));
+  if(typeof n === 'number') {
+    // return
+  };
   return BigInt(n);
 }
 

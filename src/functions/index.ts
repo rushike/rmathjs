@@ -1,61 +1,46 @@
-import {
+/**
+ * @module functions
+ */
+export {
   gcd,
   lcm,
   factorial,
   powz,
   pow,
   exp,
-} from "./elementary"
+  cos,
+  cosh,
+  sin,
+  sinh,
+  tan,
+  tanh,
+  log,
+  ln,
+  arsinh,
+  arcosh,
+  artanh
+} from "./elementary.ts"
 
-import {
+export {
   factor_out, 
   factorize,
-} from "./factors"
+} from "./factors.ts"
 
-import {
+export {
   primes,
   is_prime,
   pi,
   is_relatively_prime,
   sieve_of_eratosthenes,
   miller_rabin_primality
-} from "./primes"
+} from "./primes.ts"
 
-import {
+export {
   u,
-  I,
+  N,
   mu,
   phi,
   mangoldt
-} from "./arithmetic"
+} from "./arithmetic.ts"
 
-import {dirichlet} from "./dirichlet"
-
-export default {
-  gcd,
-  lcm,
-  factorial,
-  powz,
-  pow,
-  exp,
-  factors : {
-    factor_out, 
-    factorize
-  },
-  primes : {
-    primes,
-    is_prime,
-    is_relatively_prime,
-    sieve_of_eratosthenes,
-    miller_rabin_primality,
-    pi
-  },
-  arithmetic : {
-    u,
-    I,
-    mu,
-    phi,
-    mangoldt,
-    dirichlet
-  }
-}
+export {dirichlet} from "./dirichlet.ts"

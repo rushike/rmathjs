@@ -1,6 +1,6 @@
-import { MILLER_RABIN_K_BASES } from "../constants";
-import { gcd, pow } from "./elementary";
-import { factor_out } from "./factors";
+import { MILLER_RABIN_K_BASES } from "../constants.ts";
+import { gcd, pow } from "./elementary.ts";
+import { factor_out } from "./factors.ts";
 
 /**
  * 
@@ -12,7 +12,7 @@ export function is_prime(n : number | bigint) {
 }
 
 export function is_prime_slow(n : number | bigint) {
-  var n_ = Number(n),
+  let n_ = Number(n),
   i_ = 2,
   root_n = Math.sqrt(n_);
   while(i_ < root_n && n_ % i_ != 0) i_++;
@@ -30,16 +30,16 @@ export function is_prime_slow(n : number | bigint) {
 
 export function miller_rabin_primality(n : number | bigint, k : number | number[]= MILLER_RABIN_K_BASES) {
   const k_ = (typeof k === 'number') ? MILLER_RABIN_K_BASES.slice(0, k) : k;
-  var n_ = BigInt(n);
-  var prime = true;
+  let n_ = BigInt(n);
+  let prime = true;
   // decompose n as n = 2^s * d + 1
-  var {f : {p : p_, k : s_}, d : d_} = factor_out(n_, 2);
+  let {f : {p : p_, k : s_}, d : d_} = factor_out(n_, 2);
   
   k_.forEach(a_=> {
     if (a_ >= n) return
-    var x_ = BigInt(pow(a_, d_ - 1n, n_));
+    let x_ = BigInt(pow(a_, d_ - 1n, n_));
     if (x_ === 1n || x_ === n_ - 1n) return;
-    var s1_ = BigInt(s_) - 1n;
+    let s1_ = BigInt(s_) - 1n;
     
     while (s1_ > 0) {
       s1_--;
@@ -52,7 +52,7 @@ export function miller_rabin_primality(n : number | bigint, k : number | number[
 }
 
 export function solovay_strassen_primality(n : number | bigint) {
-  var n_ = Number(n);
+  let n_ = Number(n);
 }
 
 export function is_relatively_prime(n : number | bigint , l : number | bigint | Array<number> | Array<bigint>) {
@@ -64,7 +64,7 @@ export function primes(n : number | bigint) {
 }
 
 export function sieve_of_eratosthenes(n : number | bigint) {
-  var n_ = Number(n),
+  let n_ = Number(n),
   i_ = 3,
   j_,
   is_prime = new Int8Array(n_  + 1), // to accomadate last number

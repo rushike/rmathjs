@@ -1,7 +1,7 @@
 import { LN2_STR, PI_2_STR, PI_STR } from "../constants";
 import { C, Ci, complex, Complex } from "../dtype/C";
-import { BigDecimal, decimal, Ri, R } from "../dtype/R";
-import { Z, _factorial, _gcd, _lcm, _pow, _powm } from "../dtype/Z";
+import { Float, real, Ri, R } from "../dtype/R";
+import { Z, _factorial, _gcd, _lcm, _pow, _powm, _log2, Zi } from '../dtype/Z';
 import { NotImplementedError } from "../error";
 
 /**
@@ -97,35 +97,55 @@ export function pow(a : bigint | number, n : bigint | number, m : number | bigin
   if (typeof a === "number" || typeof a === "bigint" ) {
     if(m) return _powm(a, n, m);
     return _pow(a, n);
-  } else if(a instanceof BigDecimal) {
-    return decimal(a).powz(n);
+  } else if(a instanceof Float) {
+    return real(a).powz(n);
   } return complex(a).powz(n);
+}
+
+/**
+ * TODO: Complete funciton implementation via Bakhshali method
+ * https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Bakhshali_method
+ * @param x 
+ * @param precision 
+ * @returns 
+ */
+export function nroot(x : Ci) : Float {
+  if (x instanceof Complex) throw new NotImplementedError(`Not implemented for x = ${x} complex data type`)
+  return real(x).nroot(2)
+  // let 
+  //   _x0 = _x.le(Number.MAX_VALUE) ? Math.sqrt(_x.toNumber()) 
+  //   : (_x.n < Number.MAX_VALUE ? Number(_x.b ** ((_x.e - _x.p) / 2)) *  Number(_x.n) 
+  //   : (2));
+
+  // let x0 = real(1);
+
+  // return _x;
 }
 
 /**
  * For small x uses exp1, for large x uses exp0
  * @param x 
  */
-export function exp(x : Ci, precision : Z = 100n) : BigDecimal {
+export function exp(x : Ci, precision : Z = 100n) : Float {
   if (x instanceof Complex) throw new NotImplementedError(`Not implemented for x = ${x} complex data type`)
   return exp0(x)
 }
 
 /**
-// computing e ^ 1 took 1869 ms over 1000 iteration
-// Uses :
-//   e ^ x = 1 + x (1 + x/2(1 + x/3 (1+x/4(1 + x/5(...)))))
+ * computing e ^ 1 took 1869 ms over 1000 iteration
+ * Uses :
+ *   $$ e ^ x = 1 + x (1 + x/2(1 + x/3 (1+x/4(1 + x/5(...))))) $$
  * 
  * @param x complex
  * @returns e ^ x
  */
 export function exp0(x : Ci)  {
   if (x instanceof Complex) throw new NotImplementedError(`Not implemented for x = ${x} complex data type`)
-  var x_ = decimal(x), // x
-    x0 = decimal(1),  // initial term
+  var x_ = real(x), // x
+    x0 = real(1),  // initial term
     one = x0.one(),   // 1
     xn = x0,          // xn th term
-    iter_ = 1000
+    iter_ = 100
   ;
 
   for(var i_ = iter_; i_ > 0; i_--) {
@@ -143,9 +163,9 @@ export function exp0(x : Ci)  {
  */
 export function exp1(x : Ci) : R {
   if (x instanceof Complex) throw new NotImplementedError(`Not implemented for x = ${x} complex data type`)
-  var x_ = decimal(x), 
-    xp = decimal(1),
-    x0 = decimal(1),
+  var x_ = real(x), 
+    xp = real(1),
+    x0 = real(1),
     iter_ = 600,
     xn = x0,
     d = 1n
@@ -159,13 +179,13 @@ export function exp1(x : Ci) : R {
 
 export function exp2(x : C) : R{
   if (x instanceof Complex) throw new NotImplementedError(`Not implemented for x = ${x} complex data type`)
-  var x_ = decimal(x),
+  var x_ = real(x),
     x_2 = x_.square(), // x  ^ 2
-    x0 = decimal(1),   // initial term
+    x0 = real(1),   // initial term
     one = x0.one(),    // one
     xn = x0.add(x_),   // xn th term
     iter_ = 1000,
-    d1 = 1n, d2 = 2n, xt, xk = decimal(1), xp
+    d1 = 1n, d2 = 2n, xt, xk = real(1), xp
   ;
 
   for (var i_ = 1n; i_ < iter_; i_++){
@@ -179,25 +199,54 @@ export function exp2(x : C) : R{
 }
 
 export function log(n : Ri, b : Ri) {  
-  return decimal(ln(n)).div(ln(b));
+  return real(ln(n)).div(ln(b));
 }
 
-export function ln(n : Ri) : BigDecimal{
+/**
+ *
+ * N = 0.n * 10 ^ e  <br/>
+ *   = n * 10^ -p * 10 ^ e
+ * N = n * 10 ^ (e - p)
+ * 
+ * So,
+ * ln(N) = ln(n * 10 ^ (e-p)
+ *       = ln(n) + (e - p) * ln(10)
+ * TODO: ln: check if value is correctly calculated to precision
+ * @param n real number
+ * @returns ln(n)
+ */
+export function ln(n : Ri) : Float {
+  let n_ = real(n);
+  
+  if (n_.isInteger()) return lnz(n_.n)
+  else {
+    return lnz(n_.n).add(lnz(n_.b).mul(n_.e - n_.p))
+  }
+
+}
+
+/**
+ * This method compute logarithms for integer like
+ * TODO: lnz : this works, fix low precision
+ * @param n integer like
+ * @returns ln(n)
+ */
+export function lnz(n : Zi) : Float{
   // represent n as 2 ^ r * (1 + f)
-  var n_ = decimal(n),
-    r = n_.log$characteristic(2),
+  var n_ = real(n),
+    r = BigInt(n_.logz(2)),
     f = n_.div(2n ** r).sub(1) // n / 2 ^ r  - 1
   ;
 
   var
-    iter_ = 100n, 
-    an = decimal(iter_).mulinv(), // 1 / i_n
+    iter_ = 1000n, 
+    an = real(iter_).mulinv(), // 1 / i_n
     f_ = f,
-    ln2r = decimal(LN2_STR).mul(r)
+    ln2r = real(LN2_STR).mul(r)
     ;
-
+  /** $$ a_{n+1} = 1 / i -  f * a_n $$ */
   for(var i_ = iter_ - 1n; i_ > 0n; i_--) { // can reduce term by slight modification
-    an = decimal(i_).mulinv().sub(f_.mul(an));
+    an = real(i_).mulinv().sub(f_.mul(an));
   }
   
   return ln2r.add(an.mul(f_))
@@ -205,11 +254,11 @@ export function ln(n : Ri) : BigDecimal{
 
 export function sin(x : Ri) : R {
   var
-    M = decimal(PI_STR.slice(0, 32)).mul(2),
-    x_ = decimal(x).mod(M),
+    M = real(PI_STR.slice(0, 32)).mul(2),
+    x_ = real(x).mod(M),
     // s_ = [0, 1].includes(Number(x_.div(M.div(4)).floor())) ? 1n : -1n,
     x_2 = x_.square(), // x ^ 2
-    x0 = decimal(1),
+    x0 = real(1),
     one = x0.one(),   // 1
     an = x0,
     iter_ = 100n,
@@ -229,11 +278,11 @@ export function sin(x : Ri) : R {
 
 export function cos(x : Ri) : R {
   var
-    M = decimal(PI_STR.slice(0, 32)).mul(2),
-    x_ = decimal(x).mod(M),
+    M = real(PI_STR.slice(0, 32)).mul(2),
+    x_ = real(x).mod(M),
     // s_ = [0, 3].includes(Number(x_.div(M.div(4)).floor())) ? 1n : -1n,
     x_2 = x_.square(), // x ^ 2
-    x0 = decimal(1),
+    x0 = real(1),
     one = x0.one(),   // 1
     an = x0,
     iter_ = 100n,
@@ -255,15 +304,15 @@ export function cos(x : Ri) : R {
     return an;
 }
 
-export function tan(x : Ri) : R {
-  return sin(x).div(cos(x))
+export function tan(x : Ri) : Float {
+  return real(sin(x)).div(cos(x))
 }
 
 export function arcsin(x : Ri) : R {
-  var x_ = decimal(x),
+  var x_ = real(x),
     x_2 = x_.square(), // x  ^ 2
     iter_ = 4n,
-    xn = decimal(iter_).mulinv(),   // xn th term
+    xn = real(iter_).mulinv(),   // xn th term
     d1
   ;
 
@@ -272,7 +321,7 @@ export function arcsin(x : Ri) : R {
    * xn = 1 / (2i -1) - d1 * xn
    */
   for(var i_ = iter_; i_ > 0n; i_--) {
-    d1 = decimal(2n * i_ - 1n);
+    d1 = real(2n * i_ - 1n);
     xn = d1.mulinv().plus(
       d1.div(2n * i_).mul(x_2).mul(xn)
     )
@@ -281,15 +330,15 @@ export function arcsin(x : Ri) : R {
 
 
 export function arccos(x : Ri) : R {
-  return decimal(PI_2_STR).minus(arcsin(x))
+  return real(PI_2_STR).minus(arcsin(x))
 }
 
 export function arctan(x : Ri) : R {
-  var x_ = decimal(x),
+  var x_ = real(x),
     x_2 = x_.square(), // x  ^ 2
     iter_ = 100n,
-    xn = decimal(iter_).mulinv(),   // xn th term
-    d1 = 1n, d2 = 2n, xt, xk = decimal(1), xp
+    xn = real(iter_).mulinv(),   // xn th term
+    d1 = 1n, d2 = 2n, xt, xk = real(1), xp
   ;
   /**
    * d1 = 2i + 1
@@ -298,7 +347,7 @@ export function arctan(x : Ri) : R {
   for(var i_ = iter_ - 1n; i_ >= 0n; i_--) {
     d1 = 2n * i_ + 1n;
     
-    xn = decimal(d1).mulinv().minus(
+    xn = real(d1).mulinv().minus(
       x_2.mul(xn)
       ) // xn = 1 / (2i + 1) - x^2 * xn
       // console.log("d1 : ", d1, xn, xn.mul(x_));
@@ -317,7 +366,7 @@ export function sinh(x : Ri) : R  {
     e_2x_ = e_x_.square()
   ;
   
-  return e_2x_.minus(1).by(
+  return e_2x_.minus(1).div(
     e_x_.mul(2)
   )
 }
@@ -327,21 +376,27 @@ export function cosh(x : Ri) : R {
     e_2x_ = e_x_.square()
   ;
   
-  return e_2x_.plus(1).by(
+  return e_2x_.plus(1).div(
     e_x_.mul(2)
   )
 }
 
 export function tanh(x : Ri) : R {
-  var x_ = decimal(x),
+  var x_ = real(x),
     e_2x_ = exp(x_.mul(2)); 
   ;
   return e_2x_.sub(1).div(e_2x_.add(1));
 }
 
 
+/**
+ * $$ arsinh(x) = ln(x + \sqrt{x^2 + 1}) $$
+ * TODO: arsinh check if value is correctly calculated to precision
+ * @param x Float
+ * @returns 
+ */
 export function arsinh(x : Ri) : R{
-  var x_ = decimal(x),
+  var x_ = real(x),
     xi = x_.plus(
           x_.square().plus(1).sqrt()
         ) // x + sqrt ( x ^ 2 + 1)
@@ -350,7 +405,7 @@ export function arsinh(x : Ri) : R{
 }
 
 export function arcosh(x : Ri) : R{
-  var x_ = decimal(x),
+  var x_ = real(x),
     xi = x_.plus(
           x_.square().minus(1).sqrt()
         ) // x + sqrt ( x ^ 2 + 1)
@@ -359,13 +414,13 @@ export function arcosh(x : Ri) : R{
 }
 
 export function artanh(x : Ri) : R{
-  var x_ = decimal(x),
-    xi = x_.plus(1).by(
+  var x_ = real(x),
+    xi = x_.plus(1).div(
               x_.minus(1).addinv()
             ) // ( x + 1 ) / (x - 1)
   ;
   
-  return ln(xi).by(2);
+  return ln(xi).div(2);
 }
 /**
  * Complex Functions

@@ -1,0 +1,17 @@
+{
+  "entryPoints": ["src/index.ts", "src/dtype/index.ts"],
+  "out": "libdocs/rmathjsv2",
+  "projectDocuments": ["docs/**/*.md"],
+  "exclude": ["**/*.spec.ts", "**/tests/**"],
+  "includeVersion": true,
+  "plugin": ["./typedoc-plugin-mathjax", "typedoc-plugin-missing-exports"],
+  "excludeExternals": false,
+  "excludePrivate": false,
+  "excludeNotDocumented": false,
+  "tsconfig": "./tsconfig.json",
+  "readme": "./README.md",
+  "theme": "default",
+  "hideGenerator": true,
+  "internalModule" : "rmathjs",
+  "placeInternalsInOwningModule" : true
+}

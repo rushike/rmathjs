@@ -1,3 +1,4 @@
+import { Z, Zi } from "../dtype/Z";
 import { pow } from "./elementary";
 import { factorize, factorize$k, prime_factor_count, prime_factor_count$1 } from "./factors";
 import { miller_rabin_primality } from "./primes";
@@ -6,19 +7,22 @@ export function u(n : number | bigint) {
   return 1;
 }
 
-export function I$(n : number | bigint) {
-  var n_ = BigInt(n);
-  if( n_ == 1n ) return 1;
+export function I(n : Z) {
+  if( n === 1 ) return 1;
   return 0;
 }
 
-export function I(n : number | bigint) {
+export function N(n : number | bigint) {
   return BigInt(n);
 }
 
 export function phi(n : number | bigint) {
-  var n_ = BigInt(n),
-  factors = factorize(n);
+  if (n == 1) return 1n;
+
+  if (miller_rabin_primality(n)) return BigInt(n) - 1n;
+
+  let n_ = BigInt(n),
+    factors = factorize(n);
   
   if (n_ == 1n) return 1n;
   else if (miller_rabin_primality(n_)) return n_ - 1n;

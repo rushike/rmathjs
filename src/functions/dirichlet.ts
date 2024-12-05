@@ -7,7 +7,9 @@ type Fn = (n : number | bigint) => (number | bigint);
 
 /**
  * Dirichlet Convolution / Product
- * @TODO implement multiple level dirichelt convolution
+ * TODO: implement multiple level dirichelt convolution
+ * 
+ * @class Dirichlet
  */
 class Dirichlet {
   fx : Fn;

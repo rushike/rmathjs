@@ -1,5 +1,3 @@
-import { constant } from "lodash";
-
 export function* combinations<T>(array: T[], length: number = array.length): IterableIterator<T[]> {
   const cset = new Set<string>();
   for (let i = 0; i < array.length; i++) {
