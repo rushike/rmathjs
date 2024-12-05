@@ -3,7 +3,7 @@
  * TODO: configure vite
  */
 import { defineConfig } from 'vite';
-import path from 'path';
+import path from "node:path";
 
 /** @type {import('vite').UserConfig} */
 export default defineConfig({

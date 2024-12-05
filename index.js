@@ -1,1 +1,1 @@
-export default rmathjs = require("./lib");
+export default rmathjs = require("./lib/rmath.js");
