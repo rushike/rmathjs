@@ -1,10 +1,17 @@
 {
   "name": "@rmath/rmathjs",
-  "version": "2.0.0",
+  "version": "2.0.6",
   "author": "rushike",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "lib/rmath.cjs",
+  "module": "lib/rmath.js",
+  "types": "lib/rmath.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "require": "./lib/rmath.cjs",
+      "import": "./lib/rmath.js"
+    }
+  },
   "scripts": {
     "start": "ts-node ./src/index.ts",
     "performance": "ts-node ./performance.ts",
@@ -17,10 +24,8 @@
     "@types/lodash": "^4.14.186",
     "@types/node": "^18.11.3",
     "decimal.js": "^3.0.0",
-    "jest": "^29.7.0",
-    "jsdoc": "^4.0.4",
     "deno": "^0.1.1",
-    "nodemon": "^2.0.20",
+    "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "ts-loader": "^9.4.1",
     "ts-node": "^10.9.1",
@@ -30,8 +35,7 @@
     "typedoc-plugin-missing-exports": "^3.0.2",
     "typescript": "^5.6.3",
     "vite": "^5.4.11",
-    "webpack": "^5.74.0",
-    "webpack-cli": "^4.10.0"
+    "vite-plugin-dts": "^4.3.0"
   },
   "dependencies": {
     "lodash": "^4.17.21",

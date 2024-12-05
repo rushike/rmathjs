@@ -3,6 +3,7 @@
  * TODO: configure vite
  */
 import { defineConfig } from 'vite';
+import dts from "vite-plugin-dts";
 import path from "node:path";
 
 /** @type {import('vite').UserConfig} */
@@ -19,5 +20,10 @@ export default defineConfig({
   },
   resolve: {
     extensions: ['.ts', '.js'], // File extensions to resolve
-  }
+  },
+  plugins: [
+    dts({
+      insertTypesEntry: true,
+    }),
+  ]
 });

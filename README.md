@@ -33,7 +33,7 @@
 # Examples
 ### Init / Basic Ops
 ```javascript
-const rmath = require("@rmath/rmathjs").default
+const rmath = require("@rmath/rmathjs")
 // undefined
 
 // Decimal
@@ -58,12 +58,12 @@ const rmath = require("@rmath/rmathjs").default
 ```
 ### Basic Operations
 ``` javascript
-const {decimal} = require("@rmath/rmathjs").default
+const {decimal} = require("@rmath/rmathjs")
 
 > decimal("121021929102910290194803948309.02910980924808409809380198309810923810928").powz(3).toString()
 '1772524366559130330423516606044188242503094282693570981567002894721938643539260475274094.63818437406854206813360000829142'
 
-const {fraction} = require("@rmath/rmathjs").default
+const {fraction} = require("@rmath/rmathjs")
 // add two fractions
 > fraction("12/19").add("1/2").toString()
 // '43/38'
@@ -75,7 +75,7 @@ const {fraction} = require("@rmath/rmathjs").default
 ### Arithmetic
 This has couple of arithmetic function
 ```javascript
-const {u, I, mu, phi, mangoldt} = require("@rmath/rmathjs/lib/functions").default.arithmetic
+const {u, I, mu, phi, mangoldt} = require("@rmath/rmathjs")
 > phi(10)
 // 4n
 > mu(11)
@@ -84,7 +84,7 @@ const {u, I, mu, phi, mangoldt} = require("@rmath/rmathjs/lib/functions").defaul
 ### Primes
 Implemented few operation with primes
 ```javascript
-const {primes, is_prime, pi} = require("@rmath/rmathjs/lib/functions").default.primes
+const {primes, is_prime, pi} = require("@rmath/rmathjs")
 // prime counting function
 > pi(10000)
 1229
@@ -112,7 +112,7 @@ const {primes, is_prime, pi} = require("@rmath/rmathjs/lib/functions").default.p
 ### Factors
 Factors has functions implementation for factorize the numbers. Currently all implementation uses trial and division. Need to implement for more optimize algos.
 ```javascript
-> const {factorize, factors} = require("@rmath/rmathjs/lib/functions").default.factors
+> const {factorize, factors} = require("@rmath/rmathjs")
 // returns factorization of number using trial and division
 > factorize(111111111111111111117777777777n) // 111111111111111111117777777777 = 1 * 3 ^ 2 * 11 * 41 * 43 * 103 * 271 * 463 * 499 * 9091 * 10858510951
 // [
