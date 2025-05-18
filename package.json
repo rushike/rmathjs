@@ -24,7 +24,6 @@
     "@types/lodash": "^4.14.186",
     "@types/node": "^18.11.3",
     "decimal.js": "^3.0.0",
-    "deno": "^0.1.1",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "ts-loader": "^9.4.1",

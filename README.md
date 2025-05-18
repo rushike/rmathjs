@@ -30,12 +30,20 @@
 # Architecture
 ![rmathjs-components](./docs/img/rmathjs.png)
 
+
 # Examples
+### Import
+```javascript
+// deno
+import * as r from "lib/rmath.js"
+
+// node
+const rmathjs = require("./lib/rmath.cjs")
+```
+
 ### Init / Basic Ops
 ```javascript
-const rmath = require("@rmath/rmathjs")
-// undefined
-
+> var rmath = require("./lib/rmath.cjs")
 // Decimal
 > a = rmath.decimal(12.212)
 // BigDecimal { n: 12212n, b: 10n, e: 3n }

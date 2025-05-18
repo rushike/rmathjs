@@ -334,6 +334,7 @@ export class Float extends N  implements FloatingTypeObject {
 
   /** Number / Object methods */
   override toString()  {
+    // TODO: implement the tostring to show decimal representation
     return `Float { n = ${this.n}, b = ${this.b}, e = ${this.e}, p = ${this.p}}`
   }
 

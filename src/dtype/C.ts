@@ -58,6 +58,7 @@ export class Complex extends N implements Cx {
   }
 
   override toString() {
+    // TODO: implement decimal complex number for toString
     return `${this.a.toString()}+${this.b.toString()}i`
   }
 
