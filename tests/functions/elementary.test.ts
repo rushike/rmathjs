@@ -1,7 +1,7 @@
 import { zip } from "lodash";
 import { E_STR } from "../../src/constants";
 import { configR, getConfigAll, getConfigR, real, Float } from '../../src/dtype/R';
-import { arccos, arcosh, arcsin, arctan, arsinh, artanh, cos, cosh, exp, exp0, exp1, exp2, factorial, gcd, ln, log, pow, sin, sinh, tan, tanh } from "../../src/functions/elementary";
+import { arccos, arcosh, arcsin, arctan, arsinh, artanh, cos, cosh, exp, exp0, exp1, exp2, factorial, gcd, ln, lnz, log, pow, sin, sinh, tan, tanh } from "../../src/functions/elementary";
 
 function toBeNearBy(res : Float | [Float], expected : Float | [Float], precise = 31) {
   function check (r : Float , e : Float) {
@@ -70,9 +70,7 @@ describe("test basic math operations : ", ()=>{
       "0.90140343710581305144201223192653"
     ].map(real)
     ;
-    // console.log("CONFIG : ", getConfigAll());
-    
-    // console.log("expected : ", expected)
+
 
     var res = x.map(sin);
 
@@ -223,7 +221,8 @@ describe("test basic math operations : ", ()=>{
       expected = [real("7.36605468752217747101766084306403")]
     ;
     
-    var res = x.map(_=>log(_, b)).map(_=>real(_))
+    var res = x.map(_=>log(_, b))
+    // .map(_=>real(_))
 
     //@ts-ignore
     toBeNearBy(res, expected)
@@ -239,7 +238,21 @@ describe("test basic math operations : ", ()=>{
 
     var res = x.map(ln).map(_=>real(_))
     
-    console.log("res : ln 4 : ", res);
+    //@ts-ignore
+    toBeNearBy(res, expected)
+  })
+
+  it("test lnz function -> ", ()=>{
+    var x = [23230293, 948234, 7948234, 10, 20],
+      expected = [real("16.96096771766747913451544313441155"),
+        real("13.7623565862213409749641851843014391219"),
+        real("15.88846032358935376018789428328"),
+        real("2.30258509299404568401799145468436420760110148"),
+        real("2.995732273553990993435223576142540775676601622")
+      ]
+      ;
+
+    var res = x.map(lnz).map(_=>real(_))
     
     //@ts-ignore
     toBeNearBy(res, expected)

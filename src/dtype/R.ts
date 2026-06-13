@@ -271,6 +271,8 @@ function __div(n1 : Z, b1 : number, e1 : number, p1 : number, n2 : Z, b2 : numbe
     p1 += p2 - e2
     e2 += p2 - e2
   }
+  // console.log("n1, n2 = ", n1, n2);
+  
   return simplifyfrac(
     _div(
       _mul(n1, _pow(b1, precision))
@@ -382,6 +384,15 @@ export class Float extends N  implements FloatingTypeObject {
     return Number(this.n) * Number(this.b) ** (this.e - this.p)
   }
 
+  /**
+   * N = [ n * b ^ (e - p) ]
+   * @returns  greatest integer for real number, 
+   */
+  toBigInt() : bigint {
+    if (this.e < this.p) return 0n;
+    return BigInt(this.n) * BigInt(this.b) ** BigInt(this.e - this.p);
+  }
+
 
   lt(b : Ri) {
     b = parseargs(b);
@@ -472,6 +483,8 @@ export class Float extends N  implements FloatingTypeObject {
 
   override div(b_ : Ri, precision = CONFIG.precision) {
     var b = parseargs(b_);
+    // console.log("b_.n ", b.n, b_);
+    
     return __div(
       this.n, this.b, this.e, this.p,
       b.n, b.b, b.e, b.p,

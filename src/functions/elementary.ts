@@ -1,8 +1,8 @@
-import { LN2_STR, PI_2_STR, PI_STR } from "../constants";
-import { C, Ci, complex, Complex } from "../dtype/C";
-import { Float, real, Ri, R } from "../dtype/R";
-import { Z, _factorial, _gcd, _lcm, _pow, _powm, _log2, Zi } from '../dtype/Z';
-import { NotImplementedError } from "../error";
+import { LN2_STR, PI_2_STR, PI_STR } from "../constants.ts";
+import { C, Ci, complex, Complex } from "../dtype/C.ts";
+import { Float, real, Ri, R } from "../dtype/R.ts";
+import { Z, _factorial, _gcd, _lcm, _pow, _powm, _log2, Zi, _mul } from '../dtype/Z.ts';
+import { NotImplementedError } from "../error.ts";
 
 /**
  * Integer Function
@@ -217,8 +217,8 @@ export function log(n : Ri, b : Ri) {
  */
 export function ln(n : Ri) : Float {
   let n_ = real(n);
-  
-  if (n_.isInteger()) return lnz(n_.n)
+
+  if (n_.isInteger()) return lnz(n_.toBigInt())
   else {
     return lnz(n_.n).add(lnz(n_.b).mul(n_.e - n_.p))
   }

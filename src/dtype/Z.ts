@@ -1,7 +1,7 @@
 import { min } from "lodash";
-import { POW_10 } from "../constants";
-import { NotImplementedError } from "../error";
-import { factorial, pow$1 } from "../functions/elementary";
+import { POW_10 } from "../constants.ts";
+import { NotImplementedError } from "../error.ts";
+import { factorial, pow$1 } from "../functions/elementary.ts";
 
 export type Zi = number | bigint | string;
 
