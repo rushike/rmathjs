@@ -1,5 +1,6 @@
 import {complex} from "../../src/dtype/C"
-import { configR, real } from "../../src/dtype/R";
+import { real } from "../../src/dtype/R";
+import { config } from "../../src/config"
 
 describe("test complex (C) dtype : ", ()=>{
   it("test add method -> ", ()=>{
@@ -43,7 +44,7 @@ describe("test complex (C) dtype : ", ()=>{
         )
         ;
 
-    configR({precision : 33})
+    config({precision : 33})
     
     var res = a.div(b)
   

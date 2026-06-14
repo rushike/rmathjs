@@ -26,113 +26,434 @@
 
 <img src="./docs/img/logo.png" width="400">
 
+An advanced, high-precision mathematics library for JavaScript and TypeScript. `@rmath/rmathjs` provides comprehensive support for arbitrary-precision decimals, real numbers, fractions, and complex numbers, along with an extensive collection of arithmetic operations and transcendental functions.
 
-# Architecture
+## Architecture
 ![rmathjs-components](./docs/img/rmathjs.png)
 
-# Examples
-### Init / Basic Ops
+## Installation
+
+
+
+```bash
+npm install @rmath/rmathjs
+
+```
+
+---
+
+## Configuration
+
+To customize or initialize library configurations (such as global precision settings), import the configuration object:
+
 ```javascript
-const rmath = require("@rmath/rmathjs")
-// undefined
+import { config } from "@rmath/rmathjs";
 
-// Decimal
-> a = rmath.decimal(12.212)
-// BigDecimal { n: 12212n, b: 10n, e: 3n }
-> a.toString()
-// '12.212'
-
-> b = rmath.decimal("12121291029102910291092.90192012909120381121")
-> b.toString()
-// '12121291029102910291092.90192012909120381121'
-
-// Fraction
-> c = rmath.fraction("12/19")
-> c.toString()
-// 12/19
-
-// Complex 
-> d = rmath.complex("1+2i")
-> d.toString()
-// 1+2i
+// Config Options
+export type ConfigType = {
+  precision : number,
+  base : number
+  string : "string" | "object"
+}
 ```
-### Basic Operations
-``` javascript
-const {decimal} = require("@rmath/rmathjs")
 
-> decimal("121021929102910290194803948309.02910980924808409809380198309810923810928").powz(3).toString()
-'1772524366559130330423516606044188242503094282693570981567002894721938643539260475274094.63818437406854206813360000829142'
+---
 
-const {fraction} = require("@rmath/rmathjs")
-// add two fractions
-> fraction("12/19").add("1/2").toString()
-// '43/38'
+## Initialization & Data Types
 
-// multiply two complex numbers
-> complex("1+i").mul("4+12i").toString()
-// '-8.0+16.0i'
-```
-### Arithmetic
-This has couple of arithmetic function
+The library natively supports four core numerical types: `decimal`, `real`, `fraction`, and `complex`. These can be instantiated using numbers, strings, or BigInts.
+
+### Decimals & Real Numbers
+
 ```javascript
-const {u, I, mu, phi, mangoldt} = require("@rmath/rmathjs")
-> phi(10)
-// 4n
-> mu(11)
-// -1n
+import { decimal, real } from "@rmath/rmathjs";
+
+// Initialize from a string
+var n = decimal("121");
+console.log(n.toString()); 
+// Output: 121
+
+// Initialize as a real number
+var n = real("121");
+console.log(n.toString()); 
+// Output: 121
+
+// Initialize from a standard floating-point number
+var n = decimal(12134.121);
+console.log(n.toString()); 
+// Output: 12134.121
+
+// Initialize an arbitrary-precision large decimal string
+var n = decimal("1213212012910920131209381023809128091300128309192931.1212839182312931820391");
+console.log(n.toString()); 
+// Output: 1213212012910920131209381023809128091300128309192931.1212839182312931820391
+
+// Initialize from a BigInt
+var n = decimal(12134n);
+console.log(n.toString()); 
+// Output: 12134
+
+// Initialize from scientific notation
+var n = decimal(1.2134121e4);
+console.log(n.toString()); 
+// Output: 12134.121
+
 ```
-### Primes
-Implemented few operation with primes
+
+### Fractions
+
+Accepts either a single string of the form `"r/q"`, or two separate parameters `fraction(a, b)` where parameters are integers, BigInts, strings, or rational objects. `b` must not be null or undefined.
+
 ```javascript
-const {primes, is_prime, pi} = require("@rmath/rmathjs")
-// prime counting function
-> pi(10000)
-1229
-> pi(100)
-25
-> pi(1000)
-168
+import { fraction } from "@rmath/rmathjs";
 
-// primes less than 100
-> primes(100)
-// [
-//    2,  3,  5,  7, 11, 13, 17, 19,
-//   23, 29, 31, 37, 41, 43, 47, 53,
-//   59, 61, 67, 71, 73, 79, 83, 89,
-//   97
-// ]
+// Initialize from a single fraction string
+var f = fraction("1213/1231231");
+console.log(f.toString()); 
+// Output: 1213/1231231
 
-// prime checker, determines probable prime
-> is_prime(11111111111111111111777777777n)
-// true
-> is_prime(111111111111111111117777777777n)
-// false
+// Initialize from numerator and denominator integers
+var f = fraction(1213, 1231231);
+console.log(f.toString()); 
+// Output: 1213/1231231
+
+// Initialize from fraction string arguments (simplifies automatically)
+var f = fraction("3/12", "3/4");
+console.log(f.toString()); 
+// Output: 1/4
+
 ```
 
-### Factors
-Factors has functions implementation for factorize the numbers. Currently all implementation uses trial and division. Need to implement for more optimize algos.
+### Complex Numbers
+
+Accepts a single string formatted as `"a+ib"`, or separate real and imaginary components.
+
 ```javascript
-> const {factorize, factors} = require("@rmath/rmathjs")
-// returns factorization of number using trial and division
-> factorize(111111111111111111117777777777n) // 111111111111111111117777777777 = 1 * 3 ^ 2 * 11 * 41 * 43 * 103 * 271 * 463 * 499 * 9091 * 10858510951
-// [
-//   { k: 1, p: 1 },
-//   { p: 3n, k: 2 },
-//   { p: 11n, k: 1 },
-//   { p: 41n, k: 1 },
-//   { p: 43n, k: 1 },
-//   { p: 103n, k: 1 },
-//   { p: 271n, k: 1 },
-//   { p: 463n, k: 1 },
-//   { p: 499n, k: 1 },
-//   { p: 9091n, k: 1 },
-//   { p: 10858510951n, k: 1 }
-// ]
+import { complex } from "@rmath/rmathjs";
 
-// removes specified factor from number. 
-> factor_out(1000, 2) // 1000 = 2 ^ 2 * 125
-{ f: { p: 2n, k: 3n }, d: 125n }
+// Initialize from a single complex number string
+var c = complex("1+2i");
+console.log(c.toString()); 
+// Output: 1+2i
+
+// Initialize from distinct real and imaginary components
+var c = complex("1", 2);
+console.log(c.toString()); 
+// Output: 1+2i
+
 ```
+
+---
+
+## Basic Operations
+
+The primary numerical objects expose instance methods to perform high-precision arithmetic operations.
+
+```javascript
+import { real } from "@rmath/rmathjs";
+
+let a = real("12121210901921.912091201");
+let b = 1212918212918291892189281n;
+
+// Addition
+var r = a.add(b);
+console.log(r.toString()); 
+// Output: 1212918212930413103091202.912091201
+
+// Subtraction
+var r = a.sub(b);
+console.log(r.toString()); 
+// Output: -1212918212906170681287359.087908799
+
+// Multiplication
+var r = a.mul(b);
+console.log(r.toString()); 
+// Output: 14702037465564842672031911863800000000
+
+// Division
+var r = a.div(b);
+console.log(r.toString()); 
+// Output: 0.000000000009993428058729674783457430491
+
+// Additive Inverse (-a)
+var r = a.addinv();
+console.log(r.toString()); 
+// Output: -12121210901921.912091201
+
+// Multiplicative Inverse (1/a)
+var r = a.mulinv();
+console.log(r.toString()); 
+// Output: 0.00000000000008250000829879482
+
+// Modulo / Remainder
+var r = real(b).mod(a);
+console.log(r.toString()); 
+// Output: 6284415173512.910290169
+
+// Integer Verification (Checks if number is an integer)
+var r = a.isInteger();
+console.log(r.toString()); 
+// Output: false
+
+var r = real(1212891381938198319839183).isInteger();
+console.log(r.toString()); 
+// Output: true
+
+```
+
+---
+
+## Mathematical Functions
+
+All core functions are precision-optimized and support huge numbers, decimals, fractions, or complex numbers.
+
+### `gcd`
+
+Computes the greatest common divisor of two large integers.
+
+```javascript
+import { gcd } from "@rmath/rmathjs";
+var r = gcd(12121323232, 1212903239029012309182903810283190312n);
+console.log(r.toString()); 
+// Output: 8
+
+```
+
+### `factorial`
+
+Calculates the factorial of a given integer.
+
+```javascript
+import { factorial } from "@rmath/rmathjs";
+var r = factorial(112);
+console.log(r.toString()); 
+// Output: 197450685722107402353682037275992488341277868034975337796656295094902858969771811440894224355027779366597957338237853638272334919686385621811850780464277094400000000000000000000000000
+
+```
+
+### `pow`
+
+Performs modular exponentiation efficiently on integers.
+
+```javascript
+import { pow } from "@rmath/rmathjs";
+var r = pow(233, 13232, 1000000);
+console.log(r.toString()); 
+// Output: 799361
+
+```
+
+### `powz`
+
+Computes number raised to integer power.
+
+```javascript
+import { powz } from "@rmath/rmathjs";
+var r = powz(121, 10);
+console.log(r.toString()); 
+// Output: 672749994932560009201
+
+var r = powz("1 + 2i", 2);
+console.log(r.toString()); 
+// Output: -3+4i
+
+```
+
+### `exp`
+
+Calculates the exponential function of a value.
+
+```javascript
+import { exp } from "@rmath/rmathjs";
+var r = exp(10);
+console.log(r.toString()); 
+// Output: 22026.4657948067165169579006449
+
+var r = exp(1.71);
+console.log(r.toString()); 
+// Output: 5.52896147762400405587885235146
+
+```
+
+### `log`
+
+Computes logarithm of number to specified base.
+
+```javascript
+import { log } from "@rmath/rmathjs";
+var r = log(1000, 10);
+console.log(r.toString()); 
+// Output: 2.99999999999999999999999970088
+
+var r = log(1500, 12);
+console.log(r.toString()); 
+// Output: 2.94305638713399091876584804139
+
+```
+
+### `ln`
+
+Returns natural logarithm of a given value.
+
+```javascript
+import { ln } from "@rmath/rmathjs";
+var r = ln(1000);
+console.log(r.toString()); 
+// Output: 6.907755278982137052053973675304
+
+```
+
+### `sin`
+
+Computes the sine of an angle in radians.
+
+```javascript
+import { sin } from "@rmath/rmathjs";
+var r = sin(1.50);
+console.log(r.toString()); 
+// Output: 0.997494986604054430941723371142
+
+```
+
+### `cos`
+
+Computes the cosine of an angle in radians.
+
+```javascript
+import { cos } from "@rmath/rmathjs";
+var r = cos(1.50);
+console.log(r.toString()); 
+// Output: 0.070737201667702910088189851434
+
+```
+
+### `tan`
+
+Computes the tangent of an angle in radians.
+
+```javascript
+import { tan } from "@rmath/rmathjs";
+var r = tan(1.50);
+console.log(r.toString()); 
+// Output: 14.101419947171719387646083652
+
+```
+
+### `arcsin`
+
+Computes arcsine value; requires domain constraint input properties.
+
+```javascript
+import { arcsin } from "@rmath/rmathjs";
+var r = arcsin(.10);
+console.log(r.toString()); 
+// Output: 0.100167421199311755952380952381
+
+```
+
+> *Note: Only accepts real input domain within `[-1, 1]` to output real numbers.*
+
+### `arccos`
+
+Computes arccosine value; requires domain constraint input properties.
+
+```javascript
+import { arccos } from "@rmath/rmathjs";
+var r = arccos(.10);
+console.log(r.toString()); 
+// Output: 1.4706289055955848632789407392
+
+```
+
+> *Note: Only accepts real input domain within `[-1, 1]` to output real numbers.*
+
+### `arctan`
+
+Computes the arctangent of a given number.
+
+```javascript
+import { arctan } from "@rmath/rmathjs";
+var r = arctan(.10);
+console.log(r.toString()); 
+// Output: 0.099668652491162027378446119878
+
+```
+
+### `sinh`
+
+Computes hyperbolic sine of a given number.
+
+```javascript
+import { sinh } from "@rmath/rmathjs";
+var r = sinh(1.50);
+console.log(r.toString()); 
+// Output: 2.12927945509481749683438749467
+
+```
+
+### `cosh`
+
+Computes hyperbolic cosine of a given number.
+
+```javascript
+import { cosh } from "@rmath/rmathjs";
+var r = cosh(1.50);
+console.log(r.toString()); 
+// Output: 2.35240961524324732576766796544
+
+```
+
+### `tanh`
+
+Computes hyperbolic tangent of a given number.
+
+```javascript
+import { tanh } from "@rmath/rmathjs";
+var r = tanh(1.50);
+console.log(r.toString()); 
+// Output: 0.905148253644866438242303696456
+
+```
+
+### `arcsinh`
+
+Computes inverse hyperbolic sine of a number.
+
+```javascript
+import { arcsinh } from "@rmath/rmathjs";
+var r = arcsinh(1.50);
+console.log(r.toString()); 
+// Output: 1.194763217287109304111930829597
+
+```
+
+### `arccosh`
+
+Computes inverse hyperbolic cosine; requires domain constraint input properties.
+
+```javascript
+import { arccosh } from "@rmath/rmathjs";
+var r = arccosh(1.50);
+console.log(r.toString()); 
+// Output: 0.96242365011920689499551782761
+
+```
+
+> *Note: Only accepts real input domain `x >= 1` to output real numbers.*
+
+### `arctanh`
+
+Computes inverse hyperbolic tangent; requires domain constraint input properties.
+
+```javascript
+import { arctanh } from "@rmath/rmathjs";
+var r = arctanh(0.10);
+console.log(r.toString()); 
+// Output: 0.100335347731075580635726552489
+
+```
+
+> *Note: Only accepts real input domain within `(-1, 1)` to output real numbers.*
 
 
 # Convections

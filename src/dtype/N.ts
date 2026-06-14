@@ -1,22 +1,8 @@
 import { NotImplementedError } from "../error.ts";
 import { Z } from "./Z.ts";
+import { config } from "../config.ts";
 
-export type ConfigType = {
-  precision : number,
-  base : number
-}
-
-const CONFIG : ConfigType = {
-  precision : 32, // in mode of base. So by default 32 digits.
-  base : 10
-}
-
-export function config(c = {}) {
-  Object.entries(c).forEach(([key, val]) =>{ 
-    // @ts-ignore: overide config to passed attribute
-    if (key in CONFIG) CONFIG[key] = val;
-  })
-}
+const CONFIG = config();
 
 export class N {
   set(obj : object = {}) : any {};

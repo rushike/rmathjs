@@ -1,6 +1,7 @@
 import { zip } from "lodash";
 import { E_STR } from "../../src/constants";
-import { configR, getConfigAll, getConfigR, real, Float } from '../../src/dtype/R';
+import { config } from "../../src/config";
+import { real, Float } from '../../src/dtype/R';
 import { arccos, arcosh, arcsin, arctan, arsinh, artanh, cos, cosh, exp, exp0, exp1, exp2, factorial, gcd, ln, lnz, log, pow, sin, sinh, tan, tanh } from "../../src/functions/elementary";
 
 function toBeNearBy(res : Float | [Float], expected : Float | [Float], precise = 31) {
@@ -24,7 +25,7 @@ function toBeNearBy(res : Float | [Float], expected : Float | [Float], precise =
 
 describe("test basic math operations : ", ()=>{
   beforeAll(()=>{
-    configR({precision : 32})
+    config({precision : 32})
   })
   it("test gcd(12252121211212212222n, 12345212121212122222n) -> ", ()=>{
     var res = gcd(12252121211212212222n, 12345212121212122222n);

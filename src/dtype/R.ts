@@ -1,7 +1,8 @@
-import { InvalidNumberFormatError, InvalidParameterError, NotImplementedError, NumberCastError } from "../error";
-import { Try } from "../utils";
-import { N, ConfigType as ConfigTypeN, config as configN } from "./N";
-import { bignum, Z, _abs, _add, _div, _isinteger, _log, _max, _min, _mod, _mul, _mul3, _pow, _powz, _sub} from "./Z";
+import { InvalidNumberFormatError, InvalidParameterError, NotImplementedError, NumberCastError } from "../error.ts";
+import { Try } from "../utils.ts";
+import { config } from "../config.ts"
+import { N } from "./N.ts";
+import { bignum, Z, _abs, _add, _div, _isinteger, _log, _max, _min, _mod, _mul, _mul3, _pow, _powz, _sub} from "./Z.ts";
 
 
 export type Ri = Float | FloatingTypeObject | FloatingTypeArray |  string | bigint | number;
@@ -9,32 +10,8 @@ export type Ri = Float | FloatingTypeObject | FloatingTypeArray |  string | bigi
 export type R = Float | bigint | number;
 
 
-export type ConfigType = ConfigTypeN & {}
+const CONFIG = config();
 
-const CONFIG : ConfigType = {
-  precision : 30, // in mode of base. ~ 100 bits.
-  base : 10,
-}
-
-export function configR(c = {}) {
-  configN(c);
-  Object.entries(c).forEach(([key, val]) =>{ 
-    // @ts-ignore
-    if (key in CONFIG) CONFIG[key] = val;
-  })
-}
-
-export function getConfigR(key : keyof ConfigType) {
-  return CONFIG[key]
-}
-
-/**
- * TODO : add deepcopy
- * @returns 
- */
-export function getConfigAll() {
-  return {...CONFIG}
-}
 /**
  * FloatingTypeObject 'd' represented as :
  *    d = n * b ^ (e - p)
@@ -335,8 +312,30 @@ export class Float extends N  implements FloatingTypeObject {
   }
 
   /** Number / Object methods */
-  override toString()  {
-    return `Float { n = ${this.n}, b = ${this.b}, e = ${this.e}, p = ${this.p}}`
+  toString()  {
+    if (CONFIG.string == "object")
+      return `Float { n = ${this.n}, b = ${this.b}, e = ${this.e}, p = ${this.p}}`
+    
+    let prec = _log(this.n, this.b) + 1;
+    let s : any;
+
+    if (this.e >= this.p) {
+      s = (BigInt(this.n) * BigInt(this.b) ** BigInt(this.e - this.p)).toString(this.b);
+    }
+    else if (this.e <= 0) {
+      s = "0." + "0".repeat(Math.abs(this.e)) + this.n.toString(this.b);
+    }
+    else {
+      let left, right;
+
+      let nstring = this.n.toString(this.b);
+
+      let fraction = this.p - this.e;
+      left = nstring.slice(0, this.p - fraction);
+      right = nstring.slice(this.p - fraction);
+      s = left + "." + right;
+    }
+    return s;
   }
 
 
@@ -506,14 +505,21 @@ export class Float extends N  implements FloatingTypeObject {
   override addinv() : Float {return super.addinv()}
 
   floor() {
-    if (this.e - this.p < 0) return 0n;
-    var d = _pow(this.b, this.e - this.p)
-    ;
-    return BigInt(this.n) * BigInt(d)
+    if (this.e < 0) return 0n;
+    
+    if (this.e > this.p) return this;
+
+    var d = BigInt(this.b) ** BigInt(this.p - this.e);
+    return BigInt(this.n) / BigInt(d)
   }
 
   ceil() {
-    return BigInt(this.n) * BigInt(_pow(this.b, this.e - this.p)) + 1n; 
+    if (this.e < 0) return 0n;
+    
+    if (this.e > this.p) return this;
+
+    var d = BigInt(this.b) ** BigInt(this.p - this.e);
+    return BigInt(this.n) / BigInt(d)
   }
 
   /**

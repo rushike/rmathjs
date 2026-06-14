@@ -16,9 +16,9 @@ export {
   tanh,
   log,
   ln,
-  arsinh,
-  arcosh,
-  artanh
+  arcsinh,
+  arccosh,
+  arctanh
 } from "./elementary.ts"
 
 export {

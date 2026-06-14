@@ -1,6 +1,6 @@
-import { InvalidNumberFormatError } from "../error";
-import { N } from "./N"
-import { real, R, Ri, Float } from "./R"
+import { InvalidNumberFormatError } from "../error.ts";
+import { N } from "./N.ts"
+import { real, R, Ri, Float } from "./R.ts"
 
 export type Ci = Complex | Ri;
 
@@ -166,5 +166,5 @@ export const complex = (a :Ci , b : Ri | undefined = undefined)=>{
 }
 
 
-const ZERO = complex(0);
+const ZERO = complex("0");
 const ONE = complex(1);
