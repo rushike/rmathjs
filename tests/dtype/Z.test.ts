@@ -42,10 +42,6 @@ describe("test integer (Z) functions : ", ()=>{
       expected = [ 0, 2, 5, 11, 7, 14, 66, 384 ]
     ;
     var res = n.map(n_ =>_log(n_, b_));
-    // console.log("a, ", n);
-    // console.log("res, ", res);
-    // console.log("expected, ", expected);
-    
     
     expect(res).toEqual(expected);
   })
@@ -132,8 +128,6 @@ describe("test integer (Z) functions : ", ()=>{
       ;
     var res = Array.from(a, (_,i)=>_div(a[i], b[i]))
     
-    console.log("res : ", res);
-
     expect(res).toEqual(expected)
   })
 })

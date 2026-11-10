@@ -1,8 +1,8 @@
-import { LN2_STR, PI_2_STR, PI_STR } from "../constants";
-import { C, Ci, complex, Complex } from "../dtype/C";
-import { Float, real, Ri, R } from "../dtype/R";
-import { Z, _factorial, _gcd, _lcm, _pow, _powm, _log2, Zi } from '../dtype/Z';
-import { NotImplementedError } from "../error";
+import { LN2_STR, PI_2_STR, PI_STR } from "../constants.ts";
+import { Float, real, Ri, R } from "../dtype/R.ts";
+import { C, Ci, complex, Complex } from "../dtype/C.ts";
+import { Z, _factorial, _gcd, _lcm, _pow, _powm, _log2, Zi, _mul } from '../dtype/Z.ts';
+import { NotImplementedError } from "../error.ts";
 
 /**
  * Integer Function
@@ -217,8 +217,8 @@ export function log(n : Ri, b : Ri) {
  */
 export function ln(n : Ri) : Float {
   let n_ = real(n);
-  
-  if (n_.isInteger()) return lnz(n_.n)
+
+  if (n_.isInteger()) return lnz(n_.toBigInt())
   else {
     return lnz(n_.n).add(lnz(n_.b).mul(n_.e - n_.p))
   }
@@ -395,7 +395,7 @@ export function tanh(x : Ri) : R {
  * @param x Float
  * @returns 
  */
-export function arsinh(x : Ri) : R{
+export function arcsinh(x : Ri) : R{
   var x_ = real(x),
     xi = x_.plus(
           x_.square().plus(1).sqrt()
@@ -404,7 +404,7 @@ export function arsinh(x : Ri) : R{
   return ln(xi);
 }
 
-export function arcosh(x : Ri) : R{
+export function arccosh(x : Ri) : R{
   var x_ = real(x),
     xi = x_.plus(
           x_.square().minus(1).sqrt()
@@ -413,7 +413,7 @@ export function arcosh(x : Ri) : R{
   return ln(xi);
 }
 
-export function artanh(x : Ri) : R{
+export function arctanh(x : Ri) : R{
   var x_ = real(x),
     xi = x_.plus(1).div(
               x_.minus(1).addinv()

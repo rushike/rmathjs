@@ -1,1 +1,1 @@
-export {bignum, fraction, real, bigdecimal, complex} from "./dtype";
+export {bignum, fraction, real, bigdecimal, complex} from "./dtype/index.ts";

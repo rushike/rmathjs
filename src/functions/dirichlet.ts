@@ -1,7 +1,7 @@
 import _ from "lodash";
-import { combinations_all } from "../combinatorics";
-import { u } from "./arithmetic";
-import { factorize } from "./factors";
+import { combinations_all } from "../combinatorics.ts";
+import { u } from "./arithmetic.ts";
+import { factorize } from "./factors.ts";
 
 type Fn = (n : number | bigint) => (number | bigint);
 

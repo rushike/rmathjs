@@ -1,6 +1,20 @@
 import { E_STR } from "../../src/constants";
-import { configR, getConfigR } from "../../src/dtype/R";
+import { config } from "../../src/config"
 import {real} from "../../src/dtype/R"
+
+// 1. This runs ONCE before any tests in this specific file start
+beforeAll(() => {
+  // console.log("⚙️ Setting up config JUST for this file...");
+  // Set up your specific mocks, variables, or environment here
+  config({
+    string : "object"
+  }) 
+  return () => {
+    config({
+      string : "string"
+    })
+  };
+});
 
 describe("test real (R) dtype : ", ()=>{
   it("test parse function --> ", ()=>{
@@ -190,7 +204,7 @@ describe("test real (R) dtype : ", ()=>{
       n = [0, 1, 3, 7, 20],
       expected = ["1.0", "1.73", "5.177717", "46.37914326451397", "57666.2967582119225852461315633641336800581201n"].map(real)
       ;
-    configR({precision : 100})
+    config({precision : 100})
 
     var res = n.map(n=>a.powz(n));
     
@@ -227,9 +241,23 @@ describe("test real (R) dtype : ", ()=>{
     // console.log("diff : ", res.minus(1.148698354997035));
     
     // expect(res).toEqual(expected);
-    console.log("config : ", getConfigR("precision"))
+    
     expect(true).toBe(true);
     
+  })
+
+  it("test toString -> ", () => {
+    var n = ["12132.12121", "12123", 1e-12, "0.11121", "0.9999e-3", "6284415173512.910290169" ];
+    var expected = [ '12132.12121', '12123', '0.000000000001', '0.11121', '0.0009999', "6284415173512.910290169" ]
+    config({
+      string : "string"
+    })
+    var res = n.map(real).map(_=>_.toString());
+    config({
+      string : "object"
+    });
+    expect(res).toEqual(expected);
+
   })
 
   // it("test toprecision -> ", ()=>{

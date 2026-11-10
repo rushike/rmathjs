@@ -1,7 +1,7 @@
-import { Z, Zi } from "../dtype/Z";
-import { pow } from "./elementary";
-import { factorize, factorize$k, prime_factor_count, prime_factor_count$1 } from "./factors";
-import { miller_rabin_primality } from "./primes";
+import { Z, Zi } from "../dtype/Z.ts";
+import { pow } from "./elementary.ts";
+import { factorize, factorize$k, prime_factor_count, prime_factor_count$1 } from "./factors.ts";
+import { miller_rabin_primality } from "./primes.ts";
 
 export function u(n : number | bigint) {
   return 1;

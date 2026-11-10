@@ -2,6 +2,9 @@
  * @module rmathjs
  */
 
+
+export {config} from "./config.ts";
+
 export {
   bignum,
   fraction,
@@ -33,9 +36,12 @@ export {
   tanh,
   log,
   ln,
-  arsinh,
-  arcosh,
-  artanh
+  arcsin,
+  arcsinh,
+  arccos,
+  arccosh,
+  arctan,
+  arctanh
 } from "./functions/elementary.ts"
 
 export {
