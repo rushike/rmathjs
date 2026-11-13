@@ -3,6 +3,9 @@ import { Float, real, Ri, R } from "../dtype/R.ts";
 import { C, Ci, complex, Complex } from "../dtype/C.ts";
 import { Z, _factorial, _gcd, _lcm, _pow, _powm, _log2, Zi, _mul } from '../dtype/Z.ts';
 import { NotImplementedError } from "../error.ts";
+import { RMathBridge } from "../bridge/index.ts";
+
+import { config } from "../config.ts";
 
 /**
  * Integer Function
@@ -14,11 +17,19 @@ import { NotImplementedError } from "../error.ts";
  * @param b 
  * @returns 
  */
- export function gcd(a : Z, b : Z) : Z {
+export function gcd(a : Z, b : Z) : Z {
+  if (RMathBridge.isReady()) {
+    const res = RMathBridge.execBigInt("gcd", [a, b]);
+    return (typeof a === "number" && typeof b === "number" && res <= BigInt(Number.MAX_SAFE_INTEGER)) ? Number(res) : res;
+  }
   return _gcd(a, b);
 }
 
 export function lcm(a : Z, b : Z) : Z{
+  if (RMathBridge.isReady()) {
+    const res = RMathBridge.execBigInt("lcm", [a, b]);
+    return (typeof a === "number" && typeof b === "number" && res <= BigInt(Number.MAX_SAFE_INTEGER)) ? Number(res) : res;
+  }
   return _lcm(a, b);
 }
 
@@ -29,6 +40,10 @@ export function lcm(a : Z, b : Z) : Z{
  * @returns n!
  */
 export function factorial(n : Z) : Z{
+  if (RMathBridge.isReady()) {
+    const res = RMathBridge.execBigInt("factorial", [n]);
+    return (typeof n === "number" && res <= BigInt(Number.MAX_SAFE_INTEGER)) ? Number(res) : res;
+  }
   return _factorial(n);
 }
 
@@ -128,6 +143,9 @@ export function nroot(x : Ci) : Float {
  */
 export function exp(x : Ci, precision : Z = 100n) : Float {
   if (x instanceof Complex) throw new NotImplementedError(`Not implemented for x = ${x} complex data type`)
+  if (RMathBridge.isReady()) {
+    return RMathBridge.execReal("exp", [x]);
+  }
   return exp0(x)
 }
 
@@ -198,7 +216,10 @@ export function exp2(x : C) : R{
   } return xn
 }
 
-export function log(n : Ri, b : Ri) {  
+export function log(n : Ri, b : Ri) {
+  if (RMathBridge.isReady()) {
+    return RMathBridge.execReal("log", [n, b]);
+  }
   return real(ln(n)).div(ln(b));
 }
 
@@ -217,10 +238,14 @@ export function log(n : Ri, b : Ri) {
  */
 export function ln(n : Ri) : Float {
   let n_ = real(n);
+  if (RMathBridge.isReady()) {
+    return RMathBridge.execReal("ln", [n_]);
+  }
 
-  if (n_.isInteger()) return lnz(n_.toBigInt())
+  const p = config().precision + 10;
+  if (n_.isInteger()) return lnz(n_.toBigInt(), p)
   else {
-    return lnz(n_.n).add(lnz(n_.b).mul(n_.e - n_.p))
+    return lnz(n_.n, p).add(lnz(n_.b, p).mul(n_.e - n_.p, p))
   }
 
 }
@@ -231,30 +256,34 @@ export function ln(n : Ri) : Float {
  * @param n integer like
  * @returns ln(n)
  */
-export function lnz(n : Zi) : Float{
+export function lnz(n : Zi, precision? : number) : Float{
+  const prec = (precision && precision > 10) ? precision : config().precision + 10;
   // represent n as 2 ^ r * (1 + f)
   var n_ = real(n),
     r = BigInt(n_.logz(2)),
-    f = n_.div(2n ** r).sub(1) // n / 2 ^ r  - 1
+    f = n_.div(2n ** r, prec).sub(1) // n / 2 ^ r  - 1
   ;
 
   var
     iter_ = 1000n, 
-    an = real(iter_).mulinv(), // 1 / i_n
+    an = real(1).div(iter_, prec), // 1 / i_n
     f_ = f,
-    ln2r = real(LN2_STR).mul(r)
+    ln2r = real(LN2_STR).mul(r, prec)
     ;
   /** $$ a_{n+1} = 1 / i -  f * a_n $$ */
   for(var i_ = iter_ - 1n; i_ > 0n; i_--) { // can reduce term by slight modification
-    an = real(i_).mulinv().sub(f_.mul(an));
+    an = real(1).div(i_, prec).sub(f_.mul(an, prec));
   }
   
-  return ln2r.add(an.mul(f_))
+  return ln2r.add(an.mul(f_, prec))
 }
 
 export function sin(x : Ri) : R {
+  if (RMathBridge.isReady()) {
+    return RMathBridge.execReal("sin", [x]);
+  }
   var
-    M = real(PI_STR.slice(0, 32)).mul(2),
+    M = real(PI_STR.slice(0, 64)).mul(2),
     x_ = real(x).mod(M),
     // s_ = [0, 1].includes(Number(x_.div(M.div(4)).floor())) ? 1n : -1n,
     x_2 = x_.square(), // x ^ 2
@@ -277,8 +306,11 @@ export function sin(x : Ri) : R {
 }
 
 export function cos(x : Ri) : R {
+  if (RMathBridge.isReady()) {
+    return RMathBridge.execReal("cos", [x]);
+  }
   var
-    M = real(PI_STR.slice(0, 32)).mul(2),
+    M = real(PI_STR.slice(0, 64)).mul(2),
     x_ = real(x).mod(M),
     // s_ = [0, 3].includes(Number(x_.div(M.div(4)).floor())) ? 1n : -1n,
     x_2 = x_.square(), // x ^ 2
@@ -305,14 +337,20 @@ export function cos(x : Ri) : R {
 }
 
 export function tan(x : Ri) : Float {
+  if (RMathBridge.isReady()) {
+    return RMathBridge.execReal("tan", [x]);
+  }
   return real(sin(x)).div(cos(x))
 }
 
 export function arcsin(x : Ri) : R {
+  if (RMathBridge.isReady()) {
+    return RMathBridge.execReal("asin", [x]);
+  }
   var x_ = real(x),
     x_2 = x_.square(), // x  ^ 2
-    iter_ = 4n,
-    xn = real(iter_).mulinv(),   // xn th term
+    iter_ = 500n,
+    xn = real(2n * iter_ + 1n).mulinv(),   // xn th term
     d1
   ;
 
@@ -330,14 +368,20 @@ export function arcsin(x : Ri) : R {
 
 
 export function arccos(x : Ri) : R {
+  if (RMathBridge.isReady()) {
+    return RMathBridge.execReal("acos", [x]);
+  }
   return real(PI_2_STR).minus(arcsin(x))
 }
 
 export function arctan(x : Ri) : R {
+  if (RMathBridge.isReady()) {
+    return RMathBridge.execReal("atan", [x]);
+  }
   var x_ = real(x),
     x_2 = x_.square(), // x  ^ 2
-    iter_ = 100n,
-    xn = real(iter_).mulinv(),   // xn th term
+    iter_ = 500n,
+    xn = real(2n * iter_ + 1n).mulinv(),   // xn th term
     d1 = 1n, d2 = 2n, xt, xk = real(1), xp
   ;
   /**
@@ -362,6 +406,9 @@ export function arctan(x : Ri) : R {
  * @returns 
  */
 export function sinh(x : Ri) : R  {
+  if (RMathBridge.isReady()) {
+    return RMathBridge.execReal("sinh", [x]);
+  }
   var e_x_ = exp(x),
     e_2x_ = e_x_.square()
   ;
@@ -372,6 +419,9 @@ export function sinh(x : Ri) : R  {
 }
 
 export function cosh(x : Ri) : R {
+  if (RMathBridge.isReady()) {
+    return RMathBridge.execReal("cosh", [x]);
+  }
   var e_x_ = exp(x),
     e_2x_ = e_x_.square()
   ;
@@ -382,6 +432,9 @@ export function cosh(x : Ri) : R {
 }
 
 export function tanh(x : Ri) : R {
+  if (RMathBridge.isReady()) {
+    return RMathBridge.execReal("tanh", [x]);
+  }
   var x_ = real(x),
     e_2x_ = exp(x_.mul(2)); 
   ;
@@ -396,6 +449,9 @@ export function tanh(x : Ri) : R {
  * @returns 
  */
 export function arcsinh(x : Ri) : R{
+  if (RMathBridge.isReady()) {
+    return RMathBridge.execReal("asinh", [x]);
+  }
   var x_ = real(x),
     xi = x_.plus(
           x_.square().plus(1).sqrt()
@@ -405,6 +461,9 @@ export function arcsinh(x : Ri) : R{
 }
 
 export function arccosh(x : Ri) : R{
+  if (RMathBridge.isReady()) {
+    return RMathBridge.execReal("acosh", [x]);
+  }
   var x_ = real(x),
     xi = x_.plus(
           x_.square().minus(1).sqrt()
@@ -414,6 +473,9 @@ export function arccosh(x : Ri) : R{
 }
 
 export function arctanh(x : Ri) : R{
+  if (RMathBridge.isReady()) {
+    return RMathBridge.execReal("atanh", [x]);
+  }
   var x_ = real(x),
     xi = x_.plus(1).div(
               x_.minus(1).addinv()
@@ -422,6 +484,11 @@ export function arctanh(x : Ri) : R{
   
   return ln(xi).div(2);
 }
+
+// Aliases matching tests
+export const arsinh = arcsinh;
+export const arcosh = arccosh;
+export const artanh = arctanh;
 /**
  * Complex Functions
  * aim to define all real function over complex

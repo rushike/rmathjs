@@ -85,7 +85,7 @@ describe("test basic math operations : ", ()=>{
             real(1.123)
           ]
     var expected = [
-      "-0.26578523807338268647690806237351n",
+      "-0.2657852380733826864769080623725",
       "0.43298018843109500232420037773925"
     ].map(real)
     ;
@@ -102,7 +102,7 @@ describe("test basic math operations : ", ()=>{
       real(0.34)
     ],
     expected = [
-      "-0.31128541558772155687227053660835",
+      "-0.311285415587721556872270536609",
       "0.35373687803912256577112912235466"
     ].map(real)
 
@@ -115,7 +115,7 @@ describe("test basic math operations : ", ()=>{
 
   it("test sin-1 function -> ", ()=>{
     var x = [0.92121],
-      expected = ["1.15905589278959967228511241816321"].map(real)
+      expected = ["1.171179137444876680672124712673"].map(real)
     ;
 
     var res = x.map(arcsin)
@@ -127,7 +127,7 @@ describe("test basic math operations : ", ()=>{
 
   it("test cos-1 function -> ", ()=>{
     var x = [0.1111],
-      expected = ["1.459466492689613578839494523096611"].map(real)
+      expected = ["1.459466492786832755086107984878"].map(real)
     ;
     var res = x.map(arccos) // .map(_=>_.toString(32))
 
@@ -138,7 +138,7 @@ describe("test basic math operations : ", ()=>{
 
   it("test tan-1 function -> ", ()=>{
     var x = [0.92121],
-      expected = ["0.74441051913301442690307815496615"].map(real)
+      expected = ["0.7444105186327496819225622858843"].map(real)
       ;
     var res = x.map(arctan)
 
@@ -183,7 +183,7 @@ describe("test basic math operations : ", ()=>{
 
   it("test arcsinh function -> ", ()=>{
     var x = [3.91121],
-      expected = ["2.0729497794549505395905226852813"].map(real) // actual is : 2.0729497794549505395905226852762308703519490465447945011118772682...
+      expected = ["2.072949779454950539590522685276"].map(real) // actual is : 2.0729497794549505395905226852762308703519490465447945011118772682...
     ;
 
     var res = x.map(arsinh)
@@ -232,7 +232,7 @@ describe("test basic math operations : ", ()=>{
   it("test ln function -> ", ()=>{
     var x = [23230293, 7.948234, 7948234],
       expected = [real("16.96096771766747913451544313441155"), 
-        real("2.072949765625079656079945555179"),
+        real("2.072949765625079656079945555177"),
         real("15.88846032358935376018789428328") // TODO: check if at 30 digit precise
       ]
     ;

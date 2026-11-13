@@ -36,5 +36,6 @@ export default defineConfig({
   ],
   test: {
     globals: true, // Allows you to use describe/it/expect without importing them
+    setupFiles: ['./tests/setup.ts'],
   }
 });

@@ -68,3 +68,9 @@ export {
 
 export {dirichlet} from "./functions/dirichlet.ts"
 
+export {
+  RMathBridge,
+  initWasm,
+  isWasmReady
+} from "./bridge/index.ts";
+

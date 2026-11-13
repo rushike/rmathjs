@@ -25,7 +25,9 @@
     "dev": "nodemon ./src/index.ts",
     "typedoc": "tsc && typedoc --out libdocs/rmathjsv2 ./src",
     "build": "vite build",
-    "test": "vitest"
+    "test": "vitest --run",
+    "test:wasm": "RMATH_USE_WASM=1 vitest --run",
+    "test:nowasm": "vitest --run"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.186",
