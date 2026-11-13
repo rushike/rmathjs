@@ -27,7 +27,9 @@
     "build": "vite build",
     "test": "vitest --run",
     "test:wasm": "RMATH_USE_WASM=1 vitest --run",
-    "test:nowasm": "vitest --run"
+    "test:nowasm": "vitest --run",
+    "test:precision": "node -e 'const prec = process.argv[1] || \"100\"; process.env.RMATH_PRECISION = prec; const { spawnSync } = require(\"child_process\"); const res = spawnSync(\"npx\", [\"vitest\", \"--run\", ...process.argv.slice(2)], { stdio: \"inherit\", env: process.env }); process.exit(res.status ?? 0);'",
+    "benchmark": "vitest run benchmark.ts"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.186",

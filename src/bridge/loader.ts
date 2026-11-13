@@ -1,7 +1,8 @@
-import { BridgeConfig, RMathBridgeError } from "./types.ts";
+import { type BridgeConfig, RMathBridgeError } from "./types.ts";
 
 let wasmModule: any = null;
 let initPromise: Promise<any> | null = null;
+let wasmEnabled = true;
 
 const config: BridgeConfig = {
   strict: false,
@@ -19,10 +20,17 @@ export function isStrict(): boolean {
 }
 
 /**
+ * Temporarily enable or disable WASM execution (useful for benchmarks & fallbacks).
+ */
+export function setWasmEnabled(enabled: boolean): void {
+  wasmEnabled = enabled;
+}
+
+/**
  * Check if the WASM bridge is initialized and ready for execution.
  */
 export function isWasmReady(): boolean {
-  return wasmModule !== null;
+  return wasmModule !== null && wasmEnabled;
 }
 
 /**

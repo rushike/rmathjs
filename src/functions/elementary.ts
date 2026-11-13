@@ -242,7 +242,7 @@ export function ln(n : Ri) : Float {
     return RMathBridge.execReal("ln", [n_]);
   }
 
-  const p = config().precision + 10;
+  const p = config().precision + 25;
   if (n_.isInteger()) return lnz(n_.toBigInt(), p)
   else {
     return lnz(n_.n, p).add(lnz(n_.b, p).mul(n_.e - n_.p, p))
@@ -257,40 +257,48 @@ export function ln(n : Ri) : Float {
  * @returns ln(n)
  */
 export function lnz(n : Zi, precision? : number) : Float{
-  const prec = (precision && precision > 10) ? precision : config().precision + 10;
-  // represent n as 2 ^ r * (1 + f)
-  var n_ = real(n),
-    r = BigInt(n_.logz(2)),
-    f = n_.div(2n ** r, prec).sub(1) // n / 2 ^ r  - 1
-  ;
+  const prec = (precision && precision > 10) ? precision : config().precision + 25;
+  var n_ = real(n);
+  if (n_.le(real(0))) throw new RangeError(`ln is only defined for positive numbers, got ${n}`);
+  if (n_.eq(real(1))) return real(0);
 
-  var
-    iter_ = 1000n, 
-    an = real(1).div(iter_, prec), // 1 / i_n
-    f_ = f,
-    ln2r = real(LN2_STR).mul(r, prec)
-    ;
-  /** $$ a_{n+1} = 1 / i -  f * a_n $$ */
-  for(var i_ = iter_ - 1n; i_ > 0n; i_--) { // can reduce term by slight modification
-    an = real(1).div(i_, prec).sub(f_.mul(an, prec));
+  // represent n as 2 ^ r * x where x in [1, 2)
+  var r = BigInt(n_.logz(2));
+  var two_r = real(2n ** r);
+  var x = n_.div(two_r, prec);
+
+  // y = (x - 1) / (x + 1), so y in [0, 1/3)
+  // ln(x) = 2 * y * (1 + y^2/3 + y^4/5 + ...)
+  var y = x.sub(1).div(x.add(1), prec);
+  var m = y.square(); // y^2 in [0, 1/9)
+
+  var K = BigInt(Math.max(40, Math.ceil(prec * 1.5)));
+  var an = real(1).div(2n * K + 1n, prec);
+  for (var k = K - 1n; k >= 0n; k--) {
+    an = real(1).div(2n * k + 1n, prec).add(m.mul(an, prec));
   }
-  
-  return ln2r.add(an.mul(f_, prec))
+
+  var ln_x = y.mul(an, prec).mul(2, prec);
+  var ln2Digits = Math.max(64, prec + 15);
+  var ln2r = real(LN2_STR.slice(0, ln2Digits)).mul(r, prec);
+
+  return ln2r.add(ln_x);
 }
 
 export function sin(x : Ri) : R {
   if (RMathBridge.isReady()) {
     return RMathBridge.execReal("sin", [x]);
   }
+  const piDigits = Math.max(64, config().precision + 15);
   var
-    M = real(PI_STR.slice(0, 64)).mul(2),
+    M = real(PI_STR.slice(0, piDigits)).mul(2),
     x_ = real(x).mod(M),
     // s_ = [0, 1].includes(Number(x_.div(M.div(4)).floor())) ? 1n : -1n,
     x_2 = x_.square(), // x ^ 2
     x0 = real(1),
     one = x0.one(),   // 1
     an = x0,
-    iter_ = 100n,
+    iter_ = BigInt(Math.max(100, Math.ceil(config().precision * 3))),
     d1 
     ;
     /**
@@ -309,15 +317,16 @@ export function cos(x : Ri) : R {
   if (RMathBridge.isReady()) {
     return RMathBridge.execReal("cos", [x]);
   }
+  const piDigits = Math.max(64, config().precision + 15);
   var
-    M = real(PI_STR.slice(0, 64)).mul(2),
+    M = real(PI_STR.slice(0, piDigits)).mul(2),
     x_ = real(x).mod(M),
     // s_ = [0, 3].includes(Number(x_.div(M.div(4)).floor())) ? 1n : -1n,
     x_2 = x_.square(), // x ^ 2
     x0 = real(1),
     one = x0.one(),   // 1
     an = x0,
-    iter_ = 100n,
+    iter_ = BigInt(Math.max(100, Math.ceil(config().precision * 3))),
     d1 
     ;
 
@@ -349,7 +358,7 @@ export function arcsin(x : Ri) : R {
   }
   var x_ = real(x),
     x_2 = x_.square(), // x  ^ 2
-    iter_ = 500n,
+    iter_ = BigInt(Math.max(500, Math.ceil(config().precision * 16))),
     xn = real(2n * iter_ + 1n).mulinv(),   // xn th term
     d1
   ;
@@ -371,7 +380,8 @@ export function arccos(x : Ri) : R {
   if (RMathBridge.isReady()) {
     return RMathBridge.execReal("acos", [x]);
   }
-  return real(PI_2_STR).minus(arcsin(x))
+  const pi2Digits = Math.max(64, config().precision + 15);
+  return real(PI_2_STR.slice(0, pi2Digits)).minus(arcsin(x))
 }
 
 export function arctan(x : Ri) : R {
@@ -380,7 +390,7 @@ export function arctan(x : Ri) : R {
   }
   var x_ = real(x),
     x_2 = x_.square(), // x  ^ 2
-    iter_ = 500n,
+    iter_ = BigInt(Math.max(500, Math.ceil(config().precision * 16))),
     xn = real(2n * iter_ + 1n).mulinv(),   // xn th term
     d1 = 1n, d2 = 2n, xt, xk = real(1), xp
   ;
@@ -483,6 +493,13 @@ export function arctanh(x : Ri) : R{
   ;
   
   return ln(xi).div(2);
+}
+
+export function sqrt(x : Ri) : Float {
+  if (RMathBridge.isReady()) {
+    return RMathBridge.execReal("sqrt", [x]);
+  }
+  return real(x).sqrt();
 }
 
 // Aliases matching tests

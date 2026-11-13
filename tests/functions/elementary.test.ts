@@ -4,10 +4,12 @@ import { config } from "../../src/config";
 import { real, Float } from '../../src/dtype/R';
 import { arccos, arcosh, arcsin, arctan, arsinh, artanh, cos, cosh, exp, exp0, exp1, exp2, factorial, gcd, ln, lnz, log, pow, sin, sinh, tan, tanh } from "../../src/functions/elementary";
 
-function toBeNearBy(res : Float | [Float], expected : Float | [Float], precise = 31) {
+function toBeNearBy(res : Float | [Float], expected : Float | [Float], precise?: number) {
   function check (r : Float , e : Float) {
-    var res = r.toPrecision(precise)
-    var expected = e.toPrecision(precise)
+    const maxAvailable = Math.min(r.p, e.p);
+    const checkPrec = precise ?? Math.min(config().precision - 1, Math.max(1, maxAvailable - 1));
+    var res = r.toPrecision(checkPrec)
+    var expected = e.toPrecision(checkPrec)
     expect(res).toEqual(expected)
   }
 
@@ -25,7 +27,14 @@ function toBeNearBy(res : Float | [Float], expected : Float | [Float], precise =
 
 describe("test basic math operations : ", ()=>{
   beforeAll(()=>{
-    config({precision : 32})
+    const hasCustomPrecision = Boolean(
+      process.env.RMATH_PRECISION ||
+      process.env.PRECISION ||
+      process.argv.some(a => a.startsWith('--precision'))
+    );
+    if (!hasCustomPrecision) {
+      config({precision : 32})
+    }
   })
   it("test gcd(12252121211212212222n, 12345212121212122222n) -> ", ()=>{
     var res = gcd(12252121211212212222n, 12345212121212122222n);

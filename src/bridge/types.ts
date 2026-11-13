@@ -28,8 +28,10 @@ export interface BridgeConfig {
 }
 
 export class RMathBridgeError extends Error {
-  constructor(message: string, public readonly op?: string) {
+  public readonly op?: string;
+  constructor(message: string, op?: string) {
     super(`[rmath-bridge] ${op ? `(${op}) ` : ""}${message}`);
+    this.op = op;
     this.name = "RMathBridgeError";
   }
 }

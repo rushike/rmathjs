@@ -37,5 +37,8 @@ export default defineConfig({
   test: {
     globals: true, // Allows you to use describe/it/expect without importing them
     setupFiles: ['./tests/setup.ts'],
+    include: process.env.BENCHMARK === '1' || process.argv.some(a => a.includes('benchmark'))
+      ? ['benchmark.ts']
+      : ['tests/**/*.{test,spec}.ts'],
   }
 });

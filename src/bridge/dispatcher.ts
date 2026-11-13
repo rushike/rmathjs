@@ -1,6 +1,6 @@
-import { initWasm, isWasmReady, getWasmInstance, configureBridge, isStrict } from "./loader.ts";
+import { initWasm, isWasmReady, getWasmInstance, configureBridge, isStrict, setWasmEnabled } from "./loader.ts";
 import { marshalArg, unmarshalReal, unmarshalBigInt, unmarshalNumber } from "./marshaler.ts";
-import { BridgeRequest, BridgeResponse, RMathBridgeError } from "./types.ts";
+import { type BridgeRequest, type BridgeResponse, RMathBridgeError } from "./types.ts";
 import { Float } from "../dtype/R.ts";
 import { config } from "../config.ts";
 
@@ -20,6 +20,13 @@ export class RMathBridge {
    */
   static isReady(): boolean {
     return isWasmReady();
+  }
+
+  /**
+   * Enables or disables WASM bridge routing (useful for benchmarking against pure JS).
+   */
+  static setEnabled(enabled: boolean): void {
+    setWasmEnabled(enabled);
   }
 
   /**

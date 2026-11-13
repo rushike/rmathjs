@@ -41,7 +41,8 @@ export {
   arccos,
   arccosh,
   arctan,
-  arctanh
+  arctanh,
+  sqrt
 } from "./functions/elementary.ts"
 
 export {
